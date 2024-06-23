@@ -91,16 +91,16 @@ def depthFirstSearch(problem: SearchProblem):
     """
     "*** YOUR CODE HERE ***"
 
-    # init the dfs stack (the fringe) 所有没有被探索的点
+    # init the dfs stack (the fringe) stack 是空的
     stack = util.Stack()
 
     # make a visited list for the graph search to avoid expanding already visited states 已访问的点
-    visited = set()
+    visited = []
 
     # an empty list for the solution with state and direction
     pre_solution = []
 
-    # make a empty list for the solution to be returned 
+    # make a empty list for the solution to be returned
     solution = []
 
     # Store all nodes with forks
@@ -108,6 +108,8 @@ def depthFirstSearch(problem: SearchProblem):
 
     # insert the start state into the visited list as well
     visited.append(problem.getStartState())
+    pre_solution.append(problem.getStartState())
+    branch.append
 
     # get the relevant successor 下一步要访问的点
     for successor in problem.getSuccessors(problem.getStartState()):
@@ -117,7 +119,7 @@ def depthFirstSearch(problem: SearchProblem):
     # check if the fringe is empty
     while not stack.isEmpty():
         node_to_explore = stack.pop()
-        if node_to_explore[0] in visited: # if?
+        if node_to_explore[0] in visited:  # if?
             # get the next node
             node_to_explore = stack.pop()
         if problem.isGoalState(node_to_explore[0]):
