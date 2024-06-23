@@ -94,13 +94,13 @@ def depthFirstSearch(problem: SearchProblem):
     # init the dfs stack (the fringe)
     stack = util.Stack()
 
-    # make a visited list for the graph search to avoid expanding already visited states
+    # make a visited set for the graph search to avoid expanding already visited states
     visited = set()
 
     # make a empty list for the solution to be returned
     solution = []
 
-    # insert the start state into the visited list as well
+    # insert the start state into the visited set as well
     visited.add(problem.getStartState())
 
     # get the relevant successor
@@ -111,28 +111,33 @@ def depthFirstSearch(problem: SearchProblem):
     # check if the fringe is empty
     while not stack.isEmpty():
         node_to_explore = stack.pop()
-        while node_to_explore[0] in visited:
-            # get the next node
-            node_to_explore = stack.pop()
-        if problem.isGoalState(node_to_explore[0]):
-            # solution found
-            break
-        # push the node to the visited list
-        visited.add(node_to_explore[0])
-        solution.append(node_to_explore[1])
-        print(f"visited: {visited}")
-        # find the successors of the node that we just explored
-        next_successors = problem.getSuccessors(node_to_explore[0])
-        print(f"next successors: {next_successors}")
-        for next_successor in next_successors:
-            stack.push(next_successor)
+        # while node_to_explore[0] in visited:
+        #     # get the next node
+        #     node_to_explore = stack.pop()
+
+        if node_to_explore[0] not in visited:
+            if problem.isGoalState(node_to_explore[0]):
+                solution.append(node_to_explore[1])
+                # solution found
+                break
+            # push the node to the visited set
+            visited.add(node_to_explore[0])
+            solution.append(node_to_explore[1])
+            print(f"visited: {visited}")
+            # find the successors of the node that we just explored
+            next_successors = problem.getSuccessors(node_to_explore[0])
+            print(f"next successors: {next_successors}")
+            for next_successor in next_successors:
+                stack.push(next_successor)
+    print(f"solution: {solution}")
+    print(f"final stack: {stack.list}")
+    return solution
+
     # testing
     # print("Start:", problem.getStartState())
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
     # util.raiseNotDefined()
-    return solution
 
 
 def breadthFirstSearch(problem: SearchProblem):
