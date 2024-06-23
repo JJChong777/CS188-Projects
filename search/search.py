@@ -117,10 +117,9 @@ def depthFirstSearch(problem: SearchProblem):
     for successor in problem.getSuccessors(problem.getStartState()):
         stack.push(successor)
 
-    print(f"stack: {stack.list}\n")
     # check if the fringe is empty
     while not stack.isEmpty():
-        if counter == 30:
+        if counter == 40:
             break
         node_to_explore = stack.pop()
         while node_to_explore[0] in visited:
@@ -136,11 +135,22 @@ def depthFirstSearch(problem: SearchProblem):
         print(f"visited: {visited}")
         # find the successors of the node that we just explored
         next_successors = problem.getSuccessors(node_to_explore[0])
-        print(f"next successors: {next_successors}\n")
+        print(f"next successors: {next_successors}")
+        # get neighbor's state
+        watch_neighbor_state = [successor[0] for successor in next_successors]
+        # output current node's neighbors
+        print(f"watch_neighbor_state: {watch_neighbor_state}")
+        # check if every neighbor has been visited
+        # for neighbors in watch_neighbor_state:
+        #     if neighbors not in visited:
+        #         break
+
+
         for next_successor in next_successors:
             stack.push(next_successor)
 
         counter += 1
+        print(f"stack: {stack.list}\n")
     # testing
     # print("Start:", problem.getStartState())
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
