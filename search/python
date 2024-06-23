@@ -1,0 +1,9 @@
+[SearchAgent] using function depthFirstSearch
+[SearchAgent] using problem type PositionSearchProblem
+stack: <util.Stack object at 0x000001DB43796C30>
+visited: [(5, 5), (4, 5)]
+next successors: [((5, 5), 'East', 1), ((3, 5), 'West', 1)]
+visited: [(5, 5), (4, 5), (5, 4)]
+next successors: [((5, 5), 'North', 1), ((5, 3), 'South', 1)]
+Path found with total cost of 0 in 0.0 seconds
+Search nodes expanded: 3
