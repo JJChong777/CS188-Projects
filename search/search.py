@@ -95,13 +95,13 @@ def depthFirstSearch(problem: SearchProblem):
     stack = util.Stack()
 
     # make a visited list for the graph search to avoid expanding already visited states
-    visited = []
+    visited = set()
 
     # make a empty list for the solution to be returned
     solution = []
 
     # insert the start state into the visited list as well
-    visited.append(problem.getStartState())
+    visited.add(problem.getStartState())
 
     # get the relevant successor
     for successor in problem.getSuccessors(problem.getStartState()):
@@ -111,14 +111,14 @@ def depthFirstSearch(problem: SearchProblem):
     # check if the fringe is empty
     while not stack.isEmpty():
         node_to_explore = stack.pop()
-        if node_to_explore[0] in visited:
+        while node_to_explore[0] in visited:
             # get the next node
             node_to_explore = stack.pop()
         if problem.isGoalState(node_to_explore[0]):
             # solution found
             return
         # push the node to the visited list
-        visited.append(node_to_explore[0])
+        visited.add(node_to_explore[0])
         print(f"visited: {visited}")
         # find the successors of the node that we just explored
         next_successors = problem.getSuccessors(node_to_explore[0])
