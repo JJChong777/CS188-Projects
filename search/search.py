@@ -116,6 +116,7 @@ def depthFirstSearch(problem: SearchProblem):
             node_to_explore = stack.pop()
         if problem.isGoalState(node_to_explore[0]):
             # solution found
+            solution.append(node_to_explore[1])
             break
         # push the node to the visited list
         visited.add(node_to_explore[0])
