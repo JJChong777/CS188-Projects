@@ -109,7 +109,9 @@ def depthFirstSearch(problem: SearchProblem):
     # insert the start state into the visited list as well
     visited.append(problem.getStartState())
     pre_solution.append(problem.getStartState())
-    branch.append
+
+    # for testing
+    counter=0
 
     # get the relevant successor 下一步要访问的点
     for successor in problem.getSuccessors(problem.getStartState()):
@@ -118,6 +120,8 @@ def depthFirstSearch(problem: SearchProblem):
     print(f"stack: {stack.list}")
     # check if the fringe is empty
     while not stack.isEmpty():
+        if counter == 30:
+            break
         node_to_explore = stack.pop()
         if node_to_explore[0] in visited:  # if?
             # get the next node
@@ -132,9 +136,11 @@ def depthFirstSearch(problem: SearchProblem):
         print(f"visited: {visited}")
         # find the successors of the node that we just explored
         next_successors = problem.getSuccessors(node_to_explore[0])
-        print(f"next successors: {next_successors}")
+        print(f"next successors: {next_successors}\n")
         for next_successor in next_successors:
             stack.push(next_successor)
+        
+        counter+=1
     # testing
     # print("Start:", problem.getStartState())
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
