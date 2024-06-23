@@ -116,9 +116,10 @@ def depthFirstSearch(problem: SearchProblem):
             node_to_explore = stack.pop()
         if problem.isGoalState(node_to_explore[0]):
             # solution found
-            return
+            break
         # push the node to the visited list
         visited.add(node_to_explore[0])
+        solution.append(node_to_explore[1])
         print(f"visited: {visited}")
         # find the successors of the node that we just explored
         next_successors = problem.getSuccessors(node_to_explore[0])
@@ -131,6 +132,7 @@ def depthFirstSearch(problem: SearchProblem):
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
     # util.raiseNotDefined()
+    return solution
 
 
 def breadthFirstSearch(problem: SearchProblem):
