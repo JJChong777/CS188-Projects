@@ -219,9 +219,6 @@ def breadthFirstSearch(problem: SearchProblem):
     # make a empty list for the solution to be returned
     solution = []
 
-    # Store all nodes with forks
-    # branch = []
-
     # insert the start state into the visited list as well
     visited.append(problem.getStartState())
 
@@ -232,9 +229,7 @@ def breadthFirstSearch(problem: SearchProblem):
     # counter = 0
 
     # get the relevant successor 下一步要访问的点
-    start_successors = problem.getSuccessors(problem.getStartState())
-    # if len(start_successors) > 1:
-    #     branch.append(problem.getStartState())
+    # start_successors = problem.getSuccessors(problem.getStartState())
     for successor in problem.getSuccessors(problem.getStartState()):
         queue.push(successor)
 
@@ -248,10 +243,10 @@ def breadthFirstSearch(problem: SearchProblem):
             node_to_explore = queue.pop()
         if problem.isGoalState(node_to_explore[0]):
             # solution found
-            pre_solution.append(node_to_explore)
+            # pre_solution.append(node_to_explore)
+            # 开始回溯，构建solution：
             break
-        # check stack
-        # print(f"stack after pop: {stack.list}")
+        # 不是目标，继续遍历
         # push the node to the visited list
         visited.append(node_to_explore[0])
 
@@ -266,39 +261,6 @@ def breadthFirstSearch(problem: SearchProblem):
         I do not know why the neighbour of (34,1) is (33,1) because (33,1) is a wall
         这里获取的(34,1)的邻居不知道为什么有(33,1)
         """
-
-        # get neighbor's state 获取所有邻居坐标
-        # current_neighbor_states = [successor[0] for successor in next_successors]
-        # output current node's neighbors
-        # print(f"current_neighbor_states: {current_neighbor_states}")
-        # 计算 current_neighbor_states 中不在 visited 中的坐标数量
-        # not_visited_count = sum(
-        #     1 for coord in current_neighbor_states if coord not in visited
-        # )
-
-        # 根据 not_visited_count 的值输出相应的消息
-        # if not_visited_count > 1:
-        #     # There are multiple forks, join branch 有多个分岔路，加入branch
-        #     # print("more than 1")
-        #     branch.append(node_to_explore[0])
-        # elif not_visited_count == 1:
-        #     # go straight 直走
-        #     print("one way only")
-        # else:
-            # Dead end, turn around, find branch 死路，掉头，找branch
-            # print("no way else")
-            # 处理pre_solution：一直pop直到solution
-            # print(f"current solution: {solution}")
-            # print(f"current pre_solution: {pre_solution}")
-            # for node in reversed(pre_solution):
-            #     if node[0] != branch[-1]:
-            #         pre_solution.pop()
-            #     else:
-            #         node_to_explore = node
-            #         break
-        # print(f"current pre_solution: {pre_solution}")
-
-        # print(f"branch: {branch}")
 
         for next_successor in next_successors:
             if next_successor[0] not in visited:
