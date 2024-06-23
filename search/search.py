@@ -107,7 +107,7 @@ def depthFirstSearch(problem: SearchProblem):
     branch = []
 
     # insert the start state into the visited list as well
-    visited.add(problem.getStartState())
+    visited.append(problem.getStartState())
 
     # get the relevant successor 下一步要访问的点
     for successor in problem.getSuccessors(problem.getStartState()):
@@ -122,9 +122,10 @@ def depthFirstSearch(problem: SearchProblem):
             node_to_explore = stack.pop()
         if problem.isGoalState(node_to_explore[0]):
             # solution found
+            solution.append(node_to_explore[1])
             break
         # push the node to the visited list
-        visited.add(node_to_explore[0])
+        visited.append(node_to_explore[0])
         solution.append(node_to_explore[1])
         print(f"visited: {visited}")
         # find the successors of the node that we just explored
