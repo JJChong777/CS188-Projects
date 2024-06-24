@@ -124,8 +124,8 @@ def depthFirstSearch(problem: SearchProblem):
 
     # check if the fringe is empty
     while not stack.isEmpty():
-        if counter == 20:
-            break
+        # if counter == 20:
+        #     break
         node_to_explore = stack.pop()
         while node_to_explore[0] in visited:
             # get the next node
