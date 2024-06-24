@@ -91,59 +91,207 @@ def depthFirstSearch(problem: SearchProblem):
     """
     "*** YOUR CODE HERE ***"
 
-    # init the dfs stack (the fringe)
+    # init the dfs stack (the fringe) stack 是空的
     stack = util.Stack()
 
-    # make a visited set for the graph search to avoid expanding already visited states
-    visited = set()
+    # make a visited list for the graph search to avoid expanding already visited states 已访问的点
+    visited = []
+
+    # an empty list for the solution with state and direction
+    pre_solution = []
 
     # make a empty list for the solution to be returned
     solution = []
 
-    # insert the start state into the visited set as well
-    visited.add(problem.getStartState())
+    # Store all nodes with forks
+    branch = []
 
-    # get the relevant successor
+    # insert the start state into the visited list as well
+    visited.append(problem.getStartState())
+
+    # pre_solution储存所有信息
+    pre_solution.append(problem.getStartState())
+
+    # for testing
+    counter = 0
+
+    # get the relevant successor 下一步要访问的点
+    start_successors = problem.getSuccessors(problem.getStartState())
+    if len(start_successors) > 1:
+        branch.append(problem.getStartState())
     for successor in problem.getSuccessors(problem.getStartState()):
         stack.push(successor)
 
-    print(f"stack: {stack.list}")
     # check if the fringe is empty
     while not stack.isEmpty():
+        if counter == 20:
+            break
         node_to_explore = stack.pop()
-        # while node_to_explore[0] in visited:
-        #     # get the next node
-        #     node_to_explore = stack.pop()
+        while node_to_explore[0] in visited:
+            # get the next node
+            node_to_explore = stack.pop()
+        if problem.isGoalState(node_to_explore[0]):
+            # solution found
+            pre_solution.append(node_to_explore)
+            break
+        # check stack
+        # print(f"stack after pop: {stack.list}")
+        # push the node to the visited list
+        visited.append(node_to_explore[0])
 
-        if node_to_explore[0] not in visited:
-            if problem.isGoalState(node_to_explore[0]):
-                solution.append(node_to_explore[1])
-                # solution found
-                break
-            # push the node to the visited set
-            visited.add(node_to_explore[0])
-            solution.append(node_to_explore[1])
-            print(f"visited: {visited}")
-            # find the successors of the node that we just explored
-            next_successors = problem.getSuccessors(node_to_explore[0])
-            print(f"next successors: {next_successors}")
-            for next_successor in next_successors:
+        pre_solution.append(node_to_explore)
+        print(f"visited last: {visited[-1]}")
+        # find the successors of the node that we just explored
+        next_successors = problem.getSuccessors(node_to_explore[0])
+        print(f"next successors: {next_successors}")
+
+        """
+        NOTE:
+        don't know why the neighbour of (34,1) is (33,1) because (33,1) is a wall
+        这里获取的(34,1)的邻居不知道为什么有(33,1)
+        """
+
+        # get neighbor's state 获取所有邻居坐标
+        current_neighbor_states = [successor[0] for successor in next_successors]
+        # output current node's neighbors
+        # print(f"current_neighbor_states: {current_neighbor_states}")
+        # 计算 current_neighbor_states 中不在 visited 中的坐标数量
+        not_visited_count = sum(
+            1 for coord in current_neighbor_states if coord not in visited
+        )
+
+        # 根据 not_visited_count 的值输出相应的消息
+        if not_visited_count > 1:
+            # There are multiple forks, join branch 有多个分岔路，加入branch
+            # print("more than 1")
+            branch.append(node_to_explore[0])
+        elif not_visited_count == 1:
+            # go straight 直走
+            print("one way only")
+        else:
+            # Dead end, turn around, find branch 死路，掉头，找branch
+            # print("no way else")
+            # 处理pre_solution：一直pop直到solution
+            # print(f"current solution: {solution}")
+            # print(f"current pre_solution: {pre_solution}")
+            for node in reversed(pre_solution):
+                if node[0] != branch[-1]:
+                    pre_solution.pop()
+                else:
+                    node_to_explore = node
+                    break
+        # print(f"current pre_solution: {pre_solution}")
+
+        print(f"branch: {branch}")
+
+        for next_successor in next_successors:
+            if next_successor[0] not in visited:
                 stack.push(next_successor)
-    print(f"solution: {solution}")
-    print(f"final stack: {stack.list}")
-    return solution
 
+        counter += 1
+        print(f"stack after push: {stack.list}\n\n")
     # testing
     # print("Start:", problem.getStartState())
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     # util.raiseNotDefined()
+    # 构建 solution 列表，忽略 pre_solution 中的第一个元素
+    solution = [step[1] for step in pre_solution[1:]]
+
+    # 输出 solution 列表
+    # print(f"solution: {solution}")
+    return solution
 
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # init the bfs queue (the fringe) queue 是空的
+    queue = util.Queue()
+
+    # make a visited dictionary for backtracking and avoid expanding already visited states 已访问的点
+    visited = []
+
+    # an empty list for the solution with state and direction
+    pre_solution = []
+
+    # make a empty list for the solution to be returned
+    solution = []
+
+    # backtrack dictionary
+    backtrack = {}
+
+    # insert the start state into the visited list as well
+    visited.append(problem.getStartState())
+
+    # pre_solution储存所有信息
+    pre_solution.append(problem.getStartState())
+
+    # for testing
+    # counter = 0
+
+    # get the relevant successor 下一步要访问的点
+    # start_successors = problem.getSuccessors(problem.getStartState())
+    for successor in problem.getSuccessors(problem.getStartState()):
+        queue.push(successor)
+
+    # check if the fringe is empty
+    while not queue.isEmpty():
+        # if counter == 20:
+        #     break
+        print(f"queue before pop: {queue.list}")
+        node_to_explore = queue.pop()
+        print(f"queue after pop: {queue.list}")
+
+        while node_to_explore[0] in visited:
+            # get the next node
+            node_to_explore = queue.pop()
+        if problem.isGoalState(node_to_explore[0]):
+            print("\n\nSTOP!!!!!!!!!!!!!!!!!")
+            # solution found
+            for neighbor in problem.getSuccessors(node_to_explore[0]):
+                print(f"Goal neighbor: {neighbor}")
+                if neighbor[0] in visited:
+                    backtrack[node_to_explore] = neighbor[0]
+            # 开始回溯，构建solution：
+            print(f"Goal: {node_to_explore[0]}")
+            print(f"Final backtrack: {backtrack}")
+            break
+        # 不是目标，继续遍历
+        # push the node to the visited list
+        visited.append(node_to_explore[0])
+        print(f"visited: {visited}")
+        # for v_node in visited:
+        for neighbor in problem.getSuccessors(node_to_explore[0]):
+            print(f"neighbor: {neighbor}")
+            if neighbor[0] in visited:
+                backtrack[node_to_explore] = neighbor[0]
+                print("add to back track")
+        print(f"backtrack: {backtrack}")
+        # find the successors of the node that we just explored
+
+        next_successors = problem.getSuccessors(node_to_explore[0])
+        print(f"next successors: {next_successors}\n\n")
+
+        for next_successor in next_successors:
+            if next_successor[0] not in visited:
+                queue.push(next_successor)
+
+        # counter += 1
+
+    # testing
+    # print("Start:", problem.getStartState())
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+    # util.raiseNotDefined()
+    # 构建 solution 列表，忽略 pre_solution 中的第一个元素
+    solution = [step[1] for step in pre_solution[1:]]
+
+    # 输出 solution 列表
+    print(f"solution: {solution}")
+    return solution
+    # util.raiseNotDefined()
 
 
 def uniformCostSearch(problem: SearchProblem):
