@@ -207,10 +207,10 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    # init the dfs queue (the fringe) stack 是空的
+    # init the bfs queue (the fringe) queue 是空的
     queue = util.Queue()
 
-    # make a visited list for the graph search to avoid expanding already visited states 已访问的点
+    # make a visited dictionary for backtracking and avoid expanding already visited states 已访问的点
     visited = []
 
     # an empty list for the solution with state and direction
@@ -219,8 +219,11 @@ def breadthFirstSearch(problem: SearchProblem):
     # make a empty list for the solution to be returned
     solution = []
 
+    # backtrack dictionary
+    backtrack = {}
+
     # insert the start state into the visited list as well
-    visited.append(problem.getStartState())
+    # visited.append(problem.getStartState())
 
     # pre_solution储存所有信息
     pre_solution.append(problem.getStartState())
@@ -238,6 +241,7 @@ def breadthFirstSearch(problem: SearchProblem):
         # if counter == 20:
         #     break
         node_to_explore = queue.pop()
+
         while node_to_explore[0] in visited:
             # get the next node
             node_to_explore = queue.pop()
@@ -245,62 +249,27 @@ def breadthFirstSearch(problem: SearchProblem):
             # solution found
             # pre_solution.append(node_to_explore)
             # 开始回溯，构建solution：
+
             break
         # 不是目标，继续遍历
         # push the node to the visited list
         visited.append(node_to_explore[0])
-
-        pre_solution.append(node_to_explore)
+        for v_node in visited:
+            if v_node in problem.getSuccessors(node_to_explore[0]):
+                backtrack[node_to_explore[0]] = v_node
         print(f"visited last: {visited[-1]}")
+        print(f"backtrack: {backtrack}")
         # find the successors of the node that we just explored
+
         next_successors = problem.getSuccessors(node_to_explore[0])
         print(f"next successors: {next_successors}")
-
-        """
-        NOTE:
-        don't know why the neighbour of (34,1) is (33,1) because (33,1) is a wall
-        这里获取的(34,1)的邻居不知道为什么有(33,1)
-        """
-
-        # get neighbor's state 获取所有邻居坐标
-        # current_neighbor_states = [successor[0] for successor in next_successors]
-        # output current node's neighbors
-        # print(f"current_neighbor_states: {current_neighbor_states}")
-        # 计算 current_neighbor_states 中不在 visited 中的坐标数量
-        # not_visited_count = sum(
-        #     1 for coord in current_neighbor_states if coord not in visited
-        # )
-
-        # 根据 not_visited_count 的值输出相应的消息
-        # if not_visited_count > 1:
-        #     # There are multiple forks, join branch 有多个分岔路，加入branch
-        #     # print("more than 1")
-        #     branch.append(node_to_explore[0])
-        # elif not_visited_count == 1:
-        #     # go straight 直走
-        #     print("one way only")
-        # else:
-        # Dead end, turn around, find branch 死路，掉头，找branch
-        # print("no way else")
-        # 处理pre_solution：一直pop直到solution
-        # print(f"current solution: {solution}")
-        # print(f"current pre_solution: {pre_solution}")
-        # for node in reversed(pre_solution):
-        #     if node[0] != branch[-1]:
-        #         pre_solution.pop()
-        #     else:
-        #         node_to_explore = node
-        #         break
-        # print(f"current pre_solution: {pre_solution}")
-
-        # print(f"branch: {branch}")
 
         for next_successor in next_successors:
             if next_successor[0] not in visited:
                 queue.push(next_successor)
 
         # counter += 1
-        print(f"stack after push: {queue.list}\n\n")
+
     # testing
     # print("Start:", problem.getStartState())
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
