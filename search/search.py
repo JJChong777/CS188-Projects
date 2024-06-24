@@ -249,16 +249,16 @@ def breadthFirstSearch(problem: SearchProblem):
             node_to_explore = queue.pop()
         if problem.isGoalState(node_to_explore[0]):
             print("\n\nSTOP!!!!!!!!!!!!!!!!!")
-            # solution found
+            # solution found, 将goal加入字典
             for neighbor in problem.getSuccessors(node_to_explore[0]):
                 print(f"Goal neighbor: {neighbor}")
                 if neighbor[0] in visited:
                     backtrack[node_to_explore] = neighbor[0]
-            # 开始回溯，构建solution：
-            print(f"Goal: {node_to_explore[0]}")
+            # Start backtracking and build the solution 开始回溯，构建solution：
+            print(f"Goal: {node_to_explore}")
             print(f"Final backtrack: {backtrack}")
             break
-        # 不是目标，继续遍历
+        # not goal, keep going不是目标，继续遍历
         # push the node to the visited list
         visited.append(node_to_explore[0])
         print(f"visited: {visited}")
