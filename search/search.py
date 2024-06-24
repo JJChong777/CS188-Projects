@@ -308,9 +308,13 @@ def breadthFirstSearch(problem: SearchProblem):
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    prioQueue = util.PriorityQueue()
+    # cost_function = problem.getCostOfActions
+    prioQueue = util.PriorityQueueWithFunction(problem.getCostOfActions)
+    print(f"prioQueue: {prioQueue.priorityFunction(["West","West","West"])}")
+    # 每个位置找邻居
+    # 对每个邻居，使用prioQueue.priorityFunction(["South"])计算一遍cost
+    # 选取
     # util.raiseNotDefined()
-
 
 def nullHeuristic(state, problem=None):
     """
