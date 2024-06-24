@@ -309,7 +309,7 @@ def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     # cost_function = problem.getCostOfActions
-    prioQueue = util.PriorityQueueWithFunction(problem.getCostOfActions)
+    prioQueueWithFunction = util.PriorityQueueWithFunction(problem.getCostOfActions)
     # print(f"prioQueue: {prioQueue.priorityFunction(["West","West","West"])}")
 
     # action list
@@ -321,9 +321,9 @@ def uniformCostSearch(problem: SearchProblem):
     # 对每个邻居，使用prioQueue.priorityFunction(["South"])计算一遍cost
     for successor in successors:
         print(f"successor: {successor}")
-        prioQueue.push(successor[1])
-        prioQueue.update(action)
-        print(f"Total cost: {prioQueue.priorityFunction(action)}")
+        prioQueueWithFunction.push(successor[1])
+        # prioQueue.update(action)
+        print(f"Total cost: {prioQueueWithFunction.priorityFunction(action)}")
     # 选取
     # util.raiseNotDefined()
 
