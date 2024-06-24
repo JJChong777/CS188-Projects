@@ -223,7 +223,7 @@ def breadthFirstSearch(problem: SearchProblem):
     backtrack = {}
 
     # insert the start state into the visited list as well
-    # visited.append(problem.getStartState())
+    visited.append(problem.getStartState())
 
     # pre_solution储存所有信息
     pre_solution.append(problem.getStartState())
@@ -240,29 +240,39 @@ def breadthFirstSearch(problem: SearchProblem):
     while not queue.isEmpty():
         # if counter == 20:
         #     break
+        print(f"queue before pop: {queue.list}")
         node_to_explore = queue.pop()
+        print(f"queue after pop: {queue.list}")
 
         while node_to_explore[0] in visited:
             # get the next node
             node_to_explore = queue.pop()
         if problem.isGoalState(node_to_explore[0]):
+            print("\n\nSTOP!!!!!!!!!!!!!!!!!")
             # solution found
-            # pre_solution.append(node_to_explore)
+            for neighbor in problem.getSuccessors(node_to_explore[0]):
+                print(f"Goal neighbor: {neighbor}")
+                if neighbor[0] in visited:
+                    backtrack[node_to_explore] = neighbor[0]
             # 开始回溯，构建solution：
-
+            print(f"Goal: {node_to_explore[0]}")
+            print(f"Final backtrack: {backtrack}")
             break
         # 不是目标，继续遍历
         # push the node to the visited list
         visited.append(node_to_explore[0])
-        for v_node in visited:
-            if v_node in problem.getSuccessors(node_to_explore[0]):
-                backtrack[node_to_explore[0]] = v_node
-        print(f"visited last: {visited[-1]}")
+        print(f"visited: {visited}")
+        # for v_node in visited:
+        for neighbor in problem.getSuccessors(node_to_explore[0]):
+            print(f"neighbor: {neighbor}")
+            if neighbor[0] in visited:
+                backtrack[node_to_explore] = neighbor[0]
+                print("add to back track")
         print(f"backtrack: {backtrack}")
         # find the successors of the node that we just explored
 
         next_successors = problem.getSuccessors(node_to_explore[0])
-        print(f"next successors: {next_successors}")
+        print(f"next successors: {next_successors}\n\n")
 
         for next_successor in next_successors:
             if next_successor[0] not in visited:
