@@ -257,6 +257,15 @@ def breadthFirstSearch(problem: SearchProblem):
             # Start backtracking and build the solution 开始回溯，构建solution：
             print(f"Goal: {node_to_explore}")
             print(f"Final backtrack: {backtrack}")
+            # # 在找到起点之前，不停止while循环
+            # search_start = node_to_explore[0] # 搜索的起点：goal
+            # result = None
+            # while result != problem.getStartState(): # 当找到的key的值不是maze起点时
+            #     for key, value in backtrack.items(): 
+            #         if key[0] == search_start: # 找到搜索项对应的key
+            #             solution.append(key[1]) # 添加路径
+            #             result = value # key对应的value
+            #         print(f"current solution: {solution}")
             break
         # not goal, keep going不是目标，继续遍历
         # push the node to the visited list
