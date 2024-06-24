@@ -303,7 +303,6 @@ def breadthFirstSearch(problem: SearchProblem):
     # 输出 solution 列表
     print(f"at the end solution: {solution}")
     return solution
-    # util.raiseNotDefined()
 
 
 def uniformCostSearch(problem: SearchProblem):
