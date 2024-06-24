@@ -256,6 +256,18 @@ def breadthFirstSearch(problem: SearchProblem):
             # 开始回溯，构建solution：
             print(f"Goal: {node_to_explore[0]}")
             print(f"Final backtrack: {backtrack}")
+
+            start_state = problem.getStartState()
+            current_state = node_to_explore[0]
+            while current_state != start_state:
+                for (node, direction, _), prev_state in backtrack.items():
+                    if node == current_state:
+                        print("adding direction")
+                        solution.append(direction)
+                        current_state = prev_state
+                        break
+            solution.reverse()
+            print(f"solution: {solution}")
             break
         # 不是目标，继续遍历
         # push the node to the visited list
@@ -289,7 +301,7 @@ def breadthFirstSearch(problem: SearchProblem):
     solution = [step[1] for step in pre_solution[1:]]
 
     # 输出 solution 列表
-    print(f"solution: {solution}")
+    print(f"at the end solution: {solution}")
     return solution
     # util.raiseNotDefined()
 
