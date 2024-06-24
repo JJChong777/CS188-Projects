@@ -268,7 +268,7 @@ def breadthFirstSearch(problem: SearchProblem):
                         break
             solution.reverse()
             print(f"solution: {solution}")
-            break
+            return solution
         # not goal, keep going不是目标，继续遍历
         # push the node to the visited list
         visited.append(node_to_explore[0])
