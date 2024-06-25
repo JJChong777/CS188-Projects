@@ -346,8 +346,8 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         # print(f"self.startingPosition: {self.startingPosition}")
 
-        # initialize dictionary of corners
-        corner_counter = tuple(False, False, False, False)
+        # initialize tuple of corners
+        corner_counter = tuple([False, False, False, False])
 
         # create start_state with position and corner_counter
         start_state = (self.startingPosition, corner_counter)
@@ -364,7 +364,15 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         # 若state in self.corners，返回True；否则False
         print(f"\ncheck goal state: {state}")
-
+        corner_list = list(state[1])
+        corner_counter = 0
+        for corner in corner_list:
+            if corner == True:
+                corner_counter += 1
+        if corner_counter == 4:
+            return True
+        else:
+            return False
         # 如果corner没有访问过，设定为True
         # if state[1][state[0]] == False:
         #     state[1][state[0]] = True
@@ -424,7 +432,8 @@ class CornersProblem(search.SearchProblem):
 
             print(f"state in getSuccessors: {state}")
             # x, y = state[0]
-            x, y = state
+            x = state[0][0]
+            y = state[0][1]
             # print(f"(x, y): ({x}, {y})")
             # print(f"current action: {action}")
 
@@ -438,20 +447,23 @@ class CornersProblem(search.SearchProblem):
             if hitsWall:  # 如果是墙
                 print(f"hitsWall: {hitsWall}")
             else:  # 如果不是墙，加入邻居列表
+                corners = state[1]
+                print(f"next state corners: {corners}")
                 next_state = ((nextx, nexty), state[1])
                 print(f"new successor: {next_state}")
-                successors.append(next_state)
-
-            for successor in successors:
-                if state[0] in self.corners:
+                if next_state[0] in self.corners:
                     # 当前访问的是corner
-                    corner_list = list(state[1])
+                    corner_list = list(corners)
                     # find the index of the corner found
-                    corner_index = corner_list.index(state[0])
+                    corner_index = self.corners.index(next_state[0])
                     # update the relevant corner
                     corner_list[corner_index] = True
                     # convert back to a tuple
                     corner_tuple = tuple(corner_list)
+                    # put it back into the state
+                    next_state = ((nextx, nexty), corner_tuple)
+
+                successors.append((next_state, action, 1))
 
         self._expanded += 1  # DO NOT CHANGE
         return successors
