@@ -99,6 +99,9 @@ def depthFirstSearch(problem: SearchProblem):
     # just putting the start state here for convenience
     start_state = problem.getStartState()
 
+    # also insert the start state into the fringe
+    closed.add(start_state)
+
     # insert the neighbours of the initial state into the fringe
     # also insert a list (the path required to get to the node)
     for child_node in problem.getSuccessors(start_state):
@@ -115,8 +118,8 @@ def depthFirstSearch(problem: SearchProblem):
             closed.add(node[0][0])
             for child_node in problem.getSuccessors(node[0][0]):
                 fringeStack.push([child_node, node[1] + [child_node[1]]])
-        print(f"closed: {closed}")
-        print(f"fringe stack: {fringeStack.list}\n")
+        # print(f"closed: {closed}")
+        # print(f"fringe stack: {fringeStack.list}\n")
 
 
 def breadthFirstSearch(problem: SearchProblem):
@@ -130,6 +133,9 @@ def breadthFirstSearch(problem: SearchProblem):
 
     # just putting the start state here for convenience
     start_state = problem.getStartState()
+
+    # insert the start state into the fringe
+    closed.add(start_state)
 
     # insert the neighbours of the initial state into the fringe
     # also insert a list (the path required to get to the node)
