@@ -90,114 +90,113 @@ def depthFirstSearch(problem: SearchProblem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+    # init the closed set to check if node visited
+    closed = set()
 
     # init the dfs stack (the fringe) stack 是空的
     fringeStack = util.Stack()
 
-    #
+    # backtrack dictionary to return the list of directions
+    backtrack = {}
+
+    # parent child relationship dictionary
+    parent_child = {}
+
+    # just putting the start state here for convenience
+    start_state = problem.getStartState()
+
+    # insert the neighbours of the initial state into the fringe
+    # also insert the stuff into the backtracking dictionary
+    for child_node in problem.getSuccessors(start_state):
+        fringeStack.push(child_node)
+        backtrack[child_node] = start_state
+        parent_child[start_state] = child_node
+
+    while not fringeStack.isEmpty():
+        state, direction, _ = fringeStack.pop()
+
+        # return the solution
+        if problem.isGoalState(state):
+            print(f"backtrack: {backtrack}")
+            solution = []
+            while state != start_state:
+                for (node, direction, _), prev_state in backtrack.items():
+                    if (
+                        node == state
+                        and prev_state in parent_child
+                        and parent_child[prev_state] == (state, direction, 1)
+                    ):
+                        # print("adding direction")
+                        solution.append(direction)
+                        state = prev_state
+                        break
+            solution.reverse()
+            print(f"solution: {solution}")
+            print(f"parent_child = {parent_child}")
+            return solution
+
+        if state not in closed:
+            closed.add(state)
+            for child_node in problem.getSuccessors(state):
+                fringeStack.push(child_node)
+                backtrack[child_node] = state
+                parent_child[state] = child_node
+        # print(f"closed: {closed}")
+        # print(f"fringe stack: {fringeStack.list}\n")
 
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    # init the bfs queue (the fringe) queue 是空的
-    queue = util.Queue()
+    # init the closed set to check if node visited
+    closed = set()
 
-    # make a visited dictionary for backtracking and avoid expanding already visited states 已访问的点
-    visited = []
+    # init the dfs stack (the fringe) stack 是空的
+    fringeQueue = util.Queue()
 
-    # an empty list for the solution with state and direction
-    pre_solution = []
-
-    # make a empty list for the solution to be returned
-    solution = []
-
-    # backtrack dictionary
+    # backtrack dictionary to return the list of directions
     backtrack = {}
 
-    # insert the start state into the visited list as well
-    visited.append(problem.getStartState())
+    # parent child relationship dictionary
+    parent_child = {}
 
-    # pre_solution储存所有信息
-    pre_solution.append(problem.getStartState())
+    # just putting the start state here for convenience
+    start_state = problem.getStartState()
 
-    # for testing
-    # counter = 0
+    # insert the neighbours of the initial state into the fringe
+    # also insert the stuff into the backtracking dictionary
+    for child_node in problem.getSuccessors(start_state):
+        fringeQueue.push(child_node)
+        backtrack[child_node] = start_state
+        parent_child[start_state] = child_node
 
-    # get the relevant successor 下一步要访问的点
-    # start_successors = problem.getSuccessors(problem.getStartState())
-    for successor in problem.getSuccessors(problem.getStartState()):
-        queue.push(successor)
+    while not fringeQueue.isEmpty():
+        state, direction, _ = fringeQueue.pop()
 
-    # check if the fringe is empty
-    while not queue.isEmpty():
-        # if counter == 20:
-        #     break
-        print(f"queue before pop: {queue.list}")
-        node_to_explore = queue.pop()
-        print(f"queue after pop: {queue.list}")
-
-        while node_to_explore[0] in visited:
-            # get the next node
-            node_to_explore = queue.pop()
-        if problem.isGoalState(node_to_explore[0]):
-            print("\n\nSTOP!!!!!!!!!!!!!!!!!")
-            # solution found
-            for neighbor in problem.getSuccessors(node_to_explore[0]):
-                print(f"Goal neighbor: {neighbor}")
-                if neighbor[0] in visited:
-                    backtrack[node_to_explore] = neighbor[0]
-            # 开始回溯，构建solution：
-            print(f"Goal: {node_to_explore[0]}")
-            print(f"Final backtrack: {backtrack}")
-
-            start_state = problem.getStartState()
-            current_state = node_to_explore[0]
-            while current_state != start_state:
+        # return the solution
+        if problem.isGoalState(state):
+            # print(f"backtrack: {backtrack}")
+            solution = []
+            while state != start_state:
                 for (node, direction, _), prev_state in backtrack.items():
-                    if node == current_state:
-                        print("adding direction")
+                    if node == state:
+                        # print("adding direction")
                         solution.append(direction)
-                        current_state = prev_state
+                        state = prev_state
                         break
             solution.reverse()
-            print(f"solution: {solution}")
-            break
-        # 不是目标，继续遍历
-        # push the node to the visited list
-        visited.append(node_to_explore[0])
-        print(f"visited: {visited}")
-        # for v_node in visited:
-        for neighbor in problem.getSuccessors(node_to_explore[0]):
-            print(f"neighbor: {neighbor}")
-            if neighbor[0] in visited:
-                backtrack[node_to_explore] = neighbor[0]
-                print("add to back track")
-        print(f"backtrack: {backtrack}")
-        # find the successors of the node that we just explored
+            # print(f"solution: {solution}")
+            # print(f"parent_child = {parent_child}")
+            return solution
 
-        next_successors = problem.getSuccessors(node_to_explore[0])
-        print(f"next successors: {next_successors}\n\n")
-
-        for next_successor in next_successors:
-            if next_successor[0] not in visited:
-                queue.push(next_successor)
-
-        # counter += 1
-
-    # testing
-    # print("Start:", problem.getStartState())
-    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
-    # util.raiseNotDefined()
-    # 构建 solution 列表，忽略 pre_solution 中的第一个元素
-    solution = [step[1] for step in pre_solution[1:]]
-
-    # 输出 solution 列表
-    print(f"at the end solution: {solution}")
-    return solution
-    # util.raiseNotDefined()
+        if state not in closed:
+            closed.add(state)
+            for child_node in problem.getSuccessors(state):
+                fringeQueue.push(child_node)
+                backtrack[child_node] = state
+                parent_child[state] = child_node
+        # print(f"closed: {closed}")
+        # print(f"fringe Queue: {fringeQueue.list}\n")
 
 
 def uniformCostSearch(problem: SearchProblem):
