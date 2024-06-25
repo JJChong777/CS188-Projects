@@ -93,7 +93,7 @@ def depthFirstSearch(problem: SearchProblem):
     # init the closed set to check if node visited
     closed = set()
 
-    # init the dfs stack (the fringe) stack 是空的
+    # init the dfs stack (the fringe) 是空的
     fringeStack = util.Stack()
 
     # just putting the start state here for convenience
@@ -128,7 +128,7 @@ def breadthFirstSearch(problem: SearchProblem):
     # init the closed set to check if node visited
     closed = set()
 
-    # init the dfs stack (the fringe) stack 是空的
+    # init the bfs queue (the fringe) 是空的
     fringeQueue = util.Queue()
 
     # just putting the start state here for convenience
@@ -163,50 +163,38 @@ def uniformCostSearch(problem: SearchProblem):
     # init the closed set to check if node visited
     closed = set()
 
-    # init the dfs stack (the fringe) stack 是空的
-    fringePrioQueueWithFunc = util.PriorityQueueWithFunction(problem.getCostOfActions)
-
-    # backtrack dictionary to return the list of directions
-    backtrack = {}
-
-    # parent child relationship dictionary
-    parent_child = {}
+    # init the priority queue (the fringe) 是空的
+    fringePrioQueue = util.PriorityQueue()
 
     # just putting the start state here for convenience
     start_state = problem.getStartState()
 
-    # insert the neighbours of the initial state into the fringe
-    # also insert the stuff into the backtracking dictionary
-    for child_node in problem.getSuccessors(start_state):
-        fringePrioQueueWithFunc.push(child_node)
-        backtrack[child_node] = start_state
-        parent_child[start_state] = child_node
+    # insert the start state into the fringe
+    closed.add(start_state)
 
-    while not fringePrioQueueWithFunc.isEmpty():
-        state, direction, _ = fringePrioQueueWithFunc.pop()
+    # insert the neighbours of the initial state into the fringe
+    # also insert a list (the path required to get to the node)
+    for child_node in problem.getSuccessors(start_state):
+        fringePrioQueue.update(
+            [child_node, [child_node[1]]], problem.getCostOfActions([child_node[1]])
+        )
+
+    while not fringePrioQueue.isEmpty():
+        node = fringePrioQueue.pop()
 
         # return the solution
-        if problem.isGoalState(state):
-            # print(f"backtrack: {backtrack}")
-            solution = []
-            while state != start_state:
-                for (node, direction, _), prev_state in backtrack.items():
-                    if node == state:
-                        # print("adding direction")
-                        solution.append(direction)
-                        state = prev_state
-                        break
-            solution.reverse()
-            # print(f"solution: {solution}")
-            # print(f"parent_child = {parent_child}")
-            return solution
+        if problem.isGoalState(node[0][0]):
+            return node[1]
 
-        if state not in closed:
-            closed.add(state)
-            for child_node in problem.getSuccessors(state):
-                fringePrioQueueWithFunc.push(child_node)
-                backtrack[child_node] = state
-                parent_child[state] = child_node
+        if node[0][0] not in closed:
+            closed.add(node[0][0])
+            for child_node in problem.getSuccessors(node[0][0]):
+                fringePrioQueue.update(
+                    [child_node, node[1] + [child_node[1]]],
+                    problem.getCostOfActions(node[1] + [child_node[1]]),
+                )
+        # print(f"closed: {closed}")
+        # print(f"fringe prio queue: {fringePrioQueueWithFunction.list}\n")
 
 
 def nullHeuristic(state, problem=None):
