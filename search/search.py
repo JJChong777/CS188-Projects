@@ -308,21 +308,22 @@ def breadthFirstSearch(problem: SearchProblem):
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    # cost_function = problem.getCostOfActions
+    # visited queue
     prioQueueWithFunction = util.PriorityQueueWithFunction(problem.getCostOfActions)
-    # print(f"prioQueue: {prioQueue.priorityFunction(["West","West","West"])}")
 
     # action list
     action = []
 
-    # 每个位置找邻居 problem.getSuccessors
+    # get start point
     start_pos = problem.getStartState()
+    # find neighbors for every node 每个位置找邻居
     successors = problem.getSuccessors(start_pos)
-    # 对每个邻居，使用prioQueue.priorityFunction(["South"])计算一遍cost
+    # calculate cost of every neighbor 对每个邻居，计算一遍cost
     for successor in successors:
         print(f"successor: {successor}")
+        # push the neighbor with the least cost into the visited queue
         prioQueueWithFunction.push(successor[1])
-        # prioQueue.update(action)
+        
         print(f"Total cost: {prioQueueWithFunction.priorityFunction(action)}")
     # 选取
     # util.raiseNotDefined()
@@ -338,8 +339,14 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    # util.raiseNotDefined()
+    solution = []
+    queue = util.PriorityQueueWithFunction(problem.getCostOfActions)
+    start_state = problem.getStartState()
+    start_node = (start_state, [], 0)  # (state, path, cost)
+    queue.push(start_node)
+    print(f"queue: {queue}")
+    return solution
 
 # Abbreviations
 bfs = breadthFirstSearch
