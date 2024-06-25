@@ -208,14 +208,44 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
-    solution = []
-    queue = util.PriorityQueueWithFunction(problem.getCostOfActions)
+    # init the closed set to check if node visited
+    closed = set()
+
+    # init the priority queue (the fringe) 是空的
+    fringePrioQueue = util.PriorityQueue()
+
+    # just putting the start state here for convenience
     start_state = problem.getStartState()
-    start_node = (start_state, [], 0)  # (state, path, cost)
-    queue.push(start_node)
-    print(f"queue: {queue}")
-    return solution
+
+    # insert the start state into the fringe
+    closed.add(start_state)
+
+    # insert the neighbours of the initial state into the fringe
+    # also insert a list (the path required to get to the node)
+    for child_node in problem.getSuccessors(start_state):
+        fringePrioQueue.update(
+            [child_node, [child_node[1]]],
+            problem.getCostOfActions([child_node[1]])
+            + heuristic(child_node[0], problem),
+        )
+
+    while not fringePrioQueue.isEmpty():
+        node = fringePrioQueue.pop()
+
+        # return the solution
+        if problem.isGoalState(node[0][0]):
+            return node[1]
+
+        if node[0][0] not in closed:
+            closed.add(node[0][0])
+            for child_node in problem.getSuccessors(node[0][0]):
+                fringePrioQueue.update(
+                    [child_node, node[1] + [child_node[1]]],
+                    problem.getCostOfActions(node[1] + [child_node[1]])
+                    + heuristic(child_node[0], problem),
+                )
+        # print(f"closed: {closed}")
+        # print(f"fringe prio queue: {fringePrioQueueWithFunction.list}\n")
 
 
 # Abbreviations
