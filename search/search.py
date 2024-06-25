@@ -96,39 +96,27 @@ def depthFirstSearch(problem: SearchProblem):
     # init the dfs stack (the fringe) stack 是空的
     fringeStack = util.Stack()
 
-    # backtrack dictionary to return the list of directions
-    backtrack = {}
-
-    # parent child relationship dictionary
-    parent_child = {}
-
     # just putting the start state here for convenience
     start_state = problem.getStartState()
 
-    # add the start state to the stack
-
     # insert the neighbours of the initial state into the fringe
-    # also insert the stuff into the backtracking dictionary
+    # also insert a list (the path required to get to the node)
     for child_node in problem.getSuccessors(start_state):
-        fringeStack.push(child_node)
+        fringeStack.push([child_node, [child_node[1]]])
 
     while not fringeStack.isEmpty():
-        state, direction, _ = fringeStack.pop()
+        node = fringeStack.pop()
 
         # return the solution
-        if problem.isGoalState(state):
-            print(f"backtrack: {backtrack}")
-            solution = []
-            return solution
+        if problem.isGoalState(node[0][0]):
+            return node[1]
 
-        if state not in closed:
-            closed.add(state)
-            for child_node in problem.getSuccessors(state):
-                fringeStack.push(child_node)
-                backtrack[child_node] = state
-                parent_child[state] = child_node
-        # print(f"closed: {closed}")
-        # print(f"fringe stack: {fringeStack.list}\n")
+        if node[0][0] not in closed:
+            closed.add(node[0][0])
+            for child_node in problem.getSuccessors(node[0][0]):
+                fringeStack.push([child_node, node[1] + [child_node[1]]])
+        print(f"closed: {closed}")
+        print(f"fringe stack: {fringeStack.list}\n")
 
 
 def breadthFirstSearch(problem: SearchProblem):
@@ -140,49 +128,27 @@ def breadthFirstSearch(problem: SearchProblem):
     # init the dfs stack (the fringe) stack 是空的
     fringeQueue = util.Queue()
 
-    # backtrack dictionary to return the list of directions
-    backtrack = {}
-
-    # parent child relationship dictionary
-    parent_child = {}
-
     # just putting the start state here for convenience
     start_state = problem.getStartState()
 
     # insert the neighbours of the initial state into the fringe
-    # also insert the stuff into the backtracking dictionary
+    # also insert a list (the path required to get to the node)
     for child_node in problem.getSuccessors(start_state):
-        fringeQueue.push(child_node)
-        backtrack[child_node] = start_state
-        parent_child[start_state] = child_node
+        fringeQueue.push([child_node, [child_node[1]]])
 
     while not fringeQueue.isEmpty():
-        state, direction, _ = fringeQueue.pop()
+        node = fringeQueue.pop()
 
         # return the solution
-        if problem.isGoalState(state):
-            # print(f"backtrack: {backtrack}")
-            solution = []
-            while state != start_state:
-                for (node, direction, _), prev_state in backtrack.items():
-                    if node == state:
-                        # print("adding direction")
-                        solution.append(direction)
-                        state = prev_state
-                        break
-            solution.reverse()
-            # print(f"solution: {solution}")
-            # print(f"parent_child = {parent_child}")
-            return solution
+        if problem.isGoalState(node[0][0]):
+            return node[1]
 
-        if state not in closed:
-            closed.add(state)
-            for child_node in problem.getSuccessors(state):
-                fringeQueue.push(child_node)
-                backtrack[child_node] = state
-                parent_child[state] = child_node
+        if node[0][0] not in closed:
+            closed.add(node[0][0])
+            for child_node in problem.getSuccessors(node[0][0]):
+                fringeQueue.push([child_node, node[1] + [child_node[1]]])
         # print(f"closed: {closed}")
-        # print(f"fringe Queue: {fringeQueue.list}\n")
+        # print(f"fringe queue: {fringeQueue.list}\n")
 
 
 def uniformCostSearch(problem: SearchProblem):
