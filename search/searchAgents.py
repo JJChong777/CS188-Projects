@@ -297,8 +297,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-        return self.startingPosition
+        util.raiseNotDefined()
+        # return self.startingPosition
 
     def isGoalState(self, state: Any):
         """
@@ -307,7 +307,8 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         # 若state in self.corners，返回True；否则False
         # state should be like (position, direction)
-        return state in self.corners
+        # return state in self.corners
+        util.raiseNotDefined()
 
 
     def getSuccessors(self, state: Any):
@@ -332,15 +333,15 @@ class CornersProblem(search.SearchProblem):
 
             "*** YOUR CODE HERE ***"
             # 检查每一个邻居是不是墙
-            print(state)
-            x,y = state
-            dx, dy = Actions.directionToVector(action)
-            nextx, nexty = int(x + dx), int(y + dy)
-            hitsWall = self.walls[nextx][nexty]
-            if hitsWall: # 如果是墙
-                pass
-            else: # 如果不是墙，加入邻居列表
-                successors.append(((dx,dy),action))
+            # print(state)
+            # x,y = state
+            # dx, dy = Actions.directionToVector(action)
+            # nextx, nexty = int(x + dx), int(y + dy)
+            # hitsWall = self.walls[nextx][nexty]
+            # if hitsWall: # 如果是墙
+            #     pass
+            # else: # 如果不是墙，加入邻居列表
+            #     successors.append(((dx,dy),action))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -501,8 +502,8 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-        print(f"walls: {walls}")
+        util.raiseNotDefined()
+        # print(f"walls: {walls}")
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -538,11 +539,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-        print(f"food: {self.food}")
-        if self.food == (x,y):
-            return True
-        return False
+        util.raiseNotDefined()
+        # print(f"food: {self.food}")
+        # if self.food == (x,y):
+        #     return True
+        # return False
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
