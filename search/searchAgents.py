@@ -344,8 +344,14 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-        # return self.startingPosition
+        print(f"self.startingPosition: {self.startingPosition}")
+        start_state = tuple(value + 1 for value in self.startingPosition)
+        # start_state = (start_state_coord,[])
+        print(f"start state: {start_state}")
+        # util.raiseNotDefined()
+        # create visited list
+        self._visited = []
+        return start_state
 
     def isGoalState(self, state: Any):
         """
@@ -355,7 +361,24 @@ class CornersProblem(search.SearchProblem):
         # 若state in self.corners，返回True；否则False
         # state should be like (position, direction)
         # return state in self.corners
-        util.raiseNotDefined()
+        print(f"self.corners: {self.corners}")
+        print(f"your state: {state}")
+        print(f"visited corner: {self._visited}")
+        if state in self.corners:
+            print(f"Find a corner")
+            if len(self._visited) == 3 :
+                # this is the last corner
+                print("Find the Goal!!\n\n")
+                return True
+            else:
+                # this is not the last corner
+                if state not in self._visited:
+                    self._visited.append(state)
+                return False
+        else:
+            print(f"Not Goal")
+            return False
+        # util.raiseNotDefined()
 
     def getSuccessors(self, state: Any):
         """
@@ -383,16 +406,26 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            # 检查每一个邻居是不是墙
-            print(state)
+            print("\n")
+
+            print(f"state in getSuccessors: {state}")
             x, y = state
+            print(f"(x, y): ({x}, {y})")
+            print(f"current action: {action}")
+
+            # calculate if the successors are walls 开始计算
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            hitsWall = self.walls[nextx][nexty]
+            print(f"(nextx, nexty): ({nextx},{nextx})")
+            hitsWall = self.walls[nextx][nexty] # 返回值为True/False
+
+            # save the result
+            # print(f"self.getCostOfActions(test_action): {self.getCostOfActions(["West","West"])}")
             if hitsWall:  # 如果是墙
-                pass
+                print(f"hitsWall: {hitsWall}")
             else:  # 如果不是墙，加入邻居列表
-                successors.append(((dx, dy), action))
+                # print(f"self.getCostOfActions(action): {self.getCostOfActions(action)}")
+                successors.append(((nextx, nexty), action,1))
 
         self._expanded += 1  # DO NOT CHANGE
         return successors
