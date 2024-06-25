@@ -304,9 +304,10 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-        # 一共有4个候选goal -- 四个corner
-        
+        # 若state in self.corners，返回True；否则False
+        # state should be like (position, direction)
+        return state in self.corners
+
 
     def getSuccessors(self, state: Any):
         """
@@ -329,6 +330,16 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            # 检查每一个邻居是不是墙
+            print(state)
+            x,y = state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+            if hitsWall: # 如果是墙
+                pass
+            else: # 如果不是墙，加入邻居列表
+                successors.append(((dx,dy),action))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
