@@ -113,7 +113,7 @@ def depthFirstSearch(problem: SearchProblem):
     pre_solution.append(problem.getStartState())
 
     # for testing
-    counter = 0
+    # counter = 0
 
     # get the relevant successor 下一步要访问的点
     start_successors = problem.getSuccessors(problem.getStartState())
@@ -188,7 +188,7 @@ def depthFirstSearch(problem: SearchProblem):
             if next_successor[0] not in visited:
                 stack.push(next_successor)
 
-        counter += 1
+        # counter += 1
         print(f"stack after push: {stack.list}\n\n")
     # testing
     # print("Start:", problem.getStartState())
@@ -291,12 +291,6 @@ def breadthFirstSearch(problem: SearchProblem):
 
         # counter += 1
 
-    # testing
-    # print("Start:", problem.getStartState())
-    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
-    # util.raiseNotDefined()
     # 构建 solution 列表，忽略 pre_solution 中的第一个元素
     solution = [step[1] for step in pre_solution[1:]]
 
