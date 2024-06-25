@@ -344,13 +344,18 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        print(f"self.startingPosition: {self.startingPosition}")
-        start_state = tuple(value + 1 for value in self.startingPosition)
-        # start_state = (start_state_coord,[])
-        print(f"start state: {start_state}")
+        # print(f"self.startingPosition: {self.startingPosition}")
 
-        # create visited list
-        self._visited = []
+        # initialize corner_counter
+        corner_counter = 0
+
+        # create start_state with position and corner_counter
+        start_state = (
+            tuple(value + 1 for value in self.startingPosition),
+            corner_counter)
+        # start_state = (start_state_coord,[])
+        print(f"start state: {start_state}\n")
+        print(f"corners: {self.corners}")
 
         return start_state
 
@@ -360,25 +365,23 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         # 若state in self.corners，返回True；否则False
-        # state should be like (position, direction)
-        print(f"self.corners: {self.corners}")
-        print(f"your state: {state}")
-        print(f"visited corner: {self._visited}")
-        if state in self.corners:
-            print(f"Find a corner")
-            if len(self._visited) == 3 :
-                # this is the last corner
-                print("Find the Goal!!\n\n")
+        print(f"\ncheck goal state: {state}")
+        if state[0] in self.corners:
+            # 当前访问的是corner
+            if state[1] == 3:
+                # 已访问三个corner，这是最后一个
+                print(f"Last Goal State: {state}")
                 return True
             else:
-                # this is not the last corner
-                if state not in self._visited:
-                    self._visited.append(state)
+                # 不是最后一个，修改计数器
+                state = (
+                    state[0],
+                    state[1]+1
+                )
+                print(f"Not the last corner: {state}")
                 return False
-        else:
-            print(f"Not Goal")
-            return False
-        # util.raiseNotDefined()
+        print(f"{state} is not corner")
+        return False
 
     def getSuccessors(self, state: Any):
         """
@@ -409,23 +412,26 @@ class CornersProblem(search.SearchProblem):
             print("\n")
 
             print(f"state in getSuccessors: {state}")
-            x, y = state
-            print(f"(x, y): ({x}, {y})")
-            print(f"current action: {action}")
+            x, y = state[0]
+            # print(f"(x, y): ({x}, {y})")
+            # print(f"current action: {action}")
 
-            # calculate if the successors are walls 开始计算
+            # calculate if the successors are walls 计算是否是墙
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            print(f"(nextx, nexty): ({nextx},{nextx})")
+            # print(f"(nextx, nexty): ({nextx},{nextx})")
             hitsWall = self.walls[nextx][nexty] # 返回值为True/False
 
             # save the result
-            # print(f"self.getCostOfActions(test_action): {self.getCostOfActions(["West","West"])}")
             if hitsWall:  # 如果是墙
                 print(f"hitsWall: {hitsWall}")
             else:  # 如果不是墙，加入邻居列表
-                # print(f"self.getCostOfActions(action): {self.getCostOfActions(action)}")
-                successors.append(((nextx, nexty), action,1))
+                next_state = (
+                    (nextx, nexty),
+                    state[1]
+                )
+                print(f"new successor: {next_state}")
+                successors.append(next_state)
 
         self._expanded += 1  # DO NOT CHANGE
         return successors
@@ -612,8 +618,8 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
-        print(f"walls: \n{walls}")
-        print(f"food: \n{food}")
+        print(f"walls: \n{walls[1][1]}")
+        print(f"food: \n{food[1][1]}")
         print(f"start position: {startPosition}")
 
         """
@@ -630,6 +636,47 @@ class ClosestDotSearchAgent(SearchAgent):
                         返回食物信息
                 若是墙，忽视此邻居
         """
+
+        # # init the closed set to check if node visited
+        # closed = set()
+
+        # # init the priority queue (the fringe) 是空的
+        # fringePrioQueue = util.PriorityQueue()
+
+        # # insert the start state into the fringe
+        # closed.add(startPosition)
+
+        # # insert the neighbours of the initial state into the fringe
+        # # also insert a list (the path required to get to the node)
+        # for child_node in problem.getSuccessors(startPosition):
+        #     print(f"child_node: {child_node}")
+        #     fringePrioQueue.update(
+        #         [child_node, [child_node[1]]], problem.getCostOfActions([child_node[1]])
+        #     )
+        #     print(f"cost of actions: {problem.getCostOfActions([child_node[1]])}")
+
+        # # when there are neighbors
+        # while not fringePrioQueue.isEmpty():
+        #     node = fringePrioQueue.pop()
+        #     print(f"node: {node}")
+
+        #     # return the solution
+        #     if problem.isGoalState(node[0][0]):
+        #         # return the cost
+        #         print("Find Goal State")
+        #         return node[1]
+
+        #     # if the node has never been visited, add it to visited list (closed) 
+        #     # and update its neighbors' cost
+        #     if node[0][0] not in closed: 
+        #         closed.add(node[0][0])
+
+        #         for child_node in problem.getSuccessors(node[0][0]):
+        #             print(f"child node in neighbor list: {child_node}")
+        #             fringePrioQueue.update(
+        #                 [child_node, node[1] + [child_node[1]]],
+        #                 problem.getCostOfActions(node[1] + [child_node[1]]),
+        #             )
         
 
 

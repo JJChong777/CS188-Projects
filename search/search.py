@@ -179,15 +179,20 @@ def uniformCostSearch(problem: SearchProblem):
             [child_node, [child_node[1]]], problem.getCostOfActions([child_node[1]])
         )
 
+    # when there are neighbors
     while not fringePrioQueue.isEmpty():
         node = fringePrioQueue.pop()
 
         # return the solution
         if problem.isGoalState(node[0][0]):
+            # return the cost
             return node[1]
 
-        if node[0][0] not in closed:
+        # if the node has never been visited, add it to visited list (closed) 
+        # and update its neighbors' cost
+        if node[0][0] not in closed: 
             closed.add(node[0][0])
+
             for child_node in problem.getSuccessors(node[0][0]):
                 fringePrioQueue.update(
                     [child_node, node[1] + [child_node[1]]],
