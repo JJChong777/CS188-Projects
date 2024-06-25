@@ -91,7 +91,7 @@ def depthFirstSearch(problem: SearchProblem):
     """
     "*** YOUR CODE HERE ***"
     # init the closed set to check if node visited
-    closed = set()
+    closed = []
 
     # init the dfs stack (the fringe) 是空的
     fringeStack = util.Stack()
@@ -100,7 +100,7 @@ def depthFirstSearch(problem: SearchProblem):
     start_state = problem.getStartState()
 
     # also insert the start state into the fringe
-    closed.add(start_state)
+    closed.append(start_state)
 
     # insert the neighbours of the initial state into the fringe
     # also insert a list (the path required to get to the node)
@@ -115,7 +115,7 @@ def depthFirstSearch(problem: SearchProblem):
             return node[1]
 
         if node[0][0] not in closed:
-            closed.add(node[0][0])
+            closed.append(node[0][0])
             for child_node in problem.getSuccessors(node[0][0]):
                 fringeStack.push([child_node, node[1] + [child_node[1]]])
         # print(f"closed: {closed}")
@@ -126,7 +126,7 @@ def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     # init the closed set to check if node visited
-    closed = set()
+    closed = []
 
     # init the bfs queue (the fringe) 是空的
     fringeQueue = util.Queue()
@@ -135,7 +135,7 @@ def breadthFirstSearch(problem: SearchProblem):
     start_state = problem.getStartState()
 
     # insert the start state into the fringe
-    closed.add(start_state)
+    closed.append(start_state)
 
     # insert the neighbours of the initial state into the fringe
     # also insert a list (the path required to get to the node)
@@ -150,7 +150,7 @@ def breadthFirstSearch(problem: SearchProblem):
             return node[1]
 
         if node[0][0] not in closed:
-            closed.add(node[0][0])
+            closed.append(node[0][0])
             for child_node in problem.getSuccessors(node[0][0]):
                 fringeQueue.push([child_node, node[1] + [child_node[1]]])
         # print(f"closed: {closed}")
@@ -161,7 +161,7 @@ def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     # init the closed set to check if node visited
-    closed = set()
+    closed = []
 
     # init the priority queue (the fringe) 是空的
     fringePrioQueue = util.PriorityQueue()
@@ -170,7 +170,7 @@ def uniformCostSearch(problem: SearchProblem):
     start_state = problem.getStartState()
 
     # insert the start state into the fringe
-    closed.add(start_state)
+    closed.append(start_state)
 
     # insert the neighbours of the initial state into the fringe
     # also insert a list (the path required to get to the node)
@@ -188,10 +188,10 @@ def uniformCostSearch(problem: SearchProblem):
             # return the cost
             return node[1]
 
-        # if the node has never been visited, add it to visited list (closed) 
+        # if the node has never been visited, add it to visited list (closed)
         # and update its neighbors' cost
-        if node[0][0] not in closed: 
-            closed.add(node[0][0])
+        if node[0][0] not in closed:
+            closed.append(node[0][0])
 
             for child_node in problem.getSuccessors(node[0][0]):
                 fringePrioQueue.update(
@@ -214,7 +214,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     # init the closed set to check if node visited
-    closed = set()
+    closed = []
 
     # init the priority queue (the fringe) 是空的
     fringePrioQueue = util.PriorityQueue()
@@ -223,7 +223,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     start_state = problem.getStartState()
 
     # insert the start state into the fringe
-    closed.add(start_state)
+    closed.append(start_state)
 
     # insert the neighbours of the initial state into the fringe
     # also insert a list (the path required to get to the node)
@@ -242,7 +242,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
             return node[1]
 
         if node[0][0] not in closed:
-            closed.add(node[0][0])
+            closed.append(node[0][0])
             for child_node in problem.getSuccessors(node[0][0]):
                 fringePrioQueue.update(
                     [child_node, node[1] + [child_node[1]]],

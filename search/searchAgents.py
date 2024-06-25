@@ -346,16 +346,16 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         # print(f"self.startingPosition: {self.startingPosition}")
 
-        # initialize corner_counter
-        corner_counter = 0
+        # initialize dictionary of corners
+        corner_counter = {}
+        for corner in self.corners:
+            corner_counter[corner] = False
 
         # create start_state with position and corner_counter
-        start_state = (
-            tuple(value + 1 for value in self.startingPosition),
-            corner_counter)
+        start_state = (self.startingPosition, corner_counter)
         # start_state = (start_state_coord,[])
         print(f"start state: {start_state}\n")
-        print(f"corners: {self.corners}")
+        print(f"corners: {corner_counter}")
 
         return start_state
 
@@ -368,20 +368,35 @@ class CornersProblem(search.SearchProblem):
         print(f"\ncheck goal state: {state}")
         if state[0] in self.corners:
             # 当前访问的是corner
-            if state[1] == 3:
-                # 已访问三个corner，这是最后一个
-                print(f"Last Goal State: {state}")
-                return True
-            else:
-                # 不是最后一个，修改计数器
-                state = (
-                    state[0],
-                    state[1]+1
-                )
-                print(f"Not the last corner: {state}")
-                return False
-        print(f"{state} is not corner")
-        return False
+
+            # 如果corner没有访问过，设定为True
+            if state[1][state[0]] == False:
+                state[1][state[0]] = True
+                countVisited = 0
+                for visitFlag in state[1].values():
+                    if visitFlag:
+                        countVisited += 1
+                if countVisited == 4:
+                    print("\nAll 4 corners visited")
+                    return True
+                else:
+                    print(f"\nOnly {countVisited} corners visited")
+                    return False
+
+        else:
+            # 当前访问的不是corner
+            return False
+
+        #     else:
+        #         countVisited
+        #         for visitFlag in state[1].values():
+
+        #         # 不是最后一个，修改计数器
+        #         state = (state[0], state[1] + 1)
+        #         print(f"Not the last corner: {state}")
+        #         return False
+        # print(f"{state} is not corner")
+        # return False
 
     def getSuccessors(self, state: Any):
         """
@@ -412,7 +427,8 @@ class CornersProblem(search.SearchProblem):
             print("\n")
 
             print(f"state in getSuccessors: {state}")
-            x, y = state[0]
+            # x, y = state[0]
+            x, y = state
             # print(f"(x, y): ({x}, {y})")
             # print(f"current action: {action}")
 
@@ -420,16 +436,13 @@ class CornersProblem(search.SearchProblem):
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             # print(f"(nextx, nexty): ({nextx},{nextx})")
-            hitsWall = self.walls[nextx][nexty] # 返回值为True/False
+            hitsWall = self.walls[nextx][nexty]  # 返回值为True/False
 
             # save the result
             if hitsWall:  # 如果是墙
                 print(f"hitsWall: {hitsWall}")
             else:  # 如果不是墙，加入邻居列表
-                next_state = (
-                    (nextx, nexty),
-                    state[1]
-                )
+                next_state = ((nextx, nexty), state[1])
                 print(f"new successor: {next_state}")
                 successors.append(next_state)
 
@@ -666,9 +679,9 @@ class ClosestDotSearchAgent(SearchAgent):
         #         print("Find Goal State")
         #         return node[1]
 
-        #     # if the node has never been visited, add it to visited list (closed) 
+        #     # if the node has never been visited, add it to visited list (closed)
         #     # and update its neighbors' cost
-        #     if node[0][0] not in closed: 
+        #     if node[0][0] not in closed:
         #         closed.add(node[0][0])
 
         #         for child_node in problem.getSuccessors(node[0][0]):
@@ -677,7 +690,6 @@ class ClosestDotSearchAgent(SearchAgent):
         #                 [child_node, node[1] + [child_node[1]]],
         #                 problem.getCostOfActions(node[1] + [child_node[1]]),
         #             )
-        
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
