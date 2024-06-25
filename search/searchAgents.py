@@ -463,6 +463,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    print("get to cornersHeuristic")
     return 0  # Default to trivial solution
 
 
@@ -572,6 +573,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+    print("get to foodHeuristic function")
     return 0
 
 
@@ -610,7 +612,25 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
-        print(f"walls: {walls}")
+        print(f"walls: \n{walls}")
+        print(f"food: \n{food}")
+        print(f"start position: {startPosition}")
+
+        """
+        在找到食物之前:
+            获取当前节点的所有邻居
+            对于每一个邻居：
+                (检查邻居是否为墙)
+                若不是墙，检查邻居是否为食物
+                    若不是食物
+                        (当前节点用于计算cost,BFS版)
+                        记录来源的节点
+                    若是食物
+                        记录来到此处的路径和cost
+                        返回食物信息
+                若是墙，忽视此邻居
+        """
+        
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
