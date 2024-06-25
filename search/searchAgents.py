@@ -669,47 +669,6 @@ class ClosestDotSearchAgent(SearchAgent):
                 若是墙，忽视此邻居
         """
 
-        # # init the closed set to check if node visited
-        # closed = set()
-
-        # # init the priority queue (the fringe) 是空的
-        # fringePrioQueue = util.PriorityQueue()
-
-        # # insert the start state into the fringe
-        # closed.add(startPosition)
-
-        # # insert the neighbours of the initial state into the fringe
-        # # also insert a list (the path required to get to the node)
-        # for child_node in problem.getSuccessors(startPosition):
-        #     print(f"child_node: {child_node}")
-        #     fringePrioQueue.update(
-        #         [child_node, [child_node[1]]], problem.getCostOfActions([child_node[1]])
-        #     )
-        #     print(f"cost of actions: {problem.getCostOfActions([child_node[1]])}")
-
-        # # when there are neighbors
-        # while not fringePrioQueue.isEmpty():
-        #     node = fringePrioQueue.pop()
-        #     print(f"node: {node}")
-
-        #     # return the solution
-        #     if problem.isGoalState(node[0][0]):
-        #         # return the cost
-        #         print("Find Goal State")
-        #         return node[1]
-
-        #     # if the node has never been visited, add it to visited list (closed)
-        #     # and update its neighbors' cost
-        #     if node[0][0] not in closed:
-        #         closed.add(node[0][0])
-
-        #         for child_node in problem.getSuccessors(node[0][0]):
-        #             print(f"child node in neighbor list: {child_node}")
-        #             fringePrioQueue.update(
-        #                 [child_node, node[1] + [child_node[1]]],
-        #                 problem.getCostOfActions(node[1] + [child_node[1]]),
-        #             )
-
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
