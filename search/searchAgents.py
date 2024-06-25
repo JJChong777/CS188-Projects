@@ -344,8 +344,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-        return self.startingPosition
+        util.raiseNotDefined()
+        # return self.startingPosition
 
     def isGoalState(self, state: Any):
         """
@@ -354,7 +354,8 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         # 若state in self.corners，返回True；否则False
         # state should be like (position, direction)
-        return state in self.corners
+        # return state in self.corners
+        util.raiseNotDefined()
 
     def getSuccessors(self, state: Any):
         """
