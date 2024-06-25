@@ -426,10 +426,10 @@ class CornersProblem(search.SearchProblem):
             "*** YOUR CODE HERE ***"
             print("\n")
 
-            print(f"state in getSuccessors: {state}")
-            # x, y = state[0]
-            x, y = state
-            # print(f"(x, y): ({x}, {y})")
+            print(f"state in getSuccessors: {state}\n")
+            x, y = state[0]
+            # x, y = state
+            print(f"(x, y): ({x}, {y})")
             # print(f"current action: {action}")
 
             # calculate if the successors are walls 计算是否是墙
@@ -631,9 +631,40 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
-        print(f"walls: \n{walls[1][1]}")
-        print(f"food: \n{food[1][1]}")
-        print(f"start position: {startPosition}")
+        print(f"walls: \n{walls}")
+        print(f"food: \n{food}")
+        # print(f"start position: {startPosition}")
+        # print(f"self.actions: {self.actions}")
+        # print(f"self.getAction: {self.getAction(["West","West"])}")
+        # print(f"self.actionIndex: {self.actionIndex}")
+        print("\n\n")
+
+        # initialize action_list
+        action_list = []
+        action_list.append(startPosition)
+        print(f"path: {action_list}")
+
+        # initialize start state
+        start_state = (
+            startPosition,
+            action_list
+        )
+
+        # counter for testing 
+        counter = 0
+
+        while not food[action_list[-1][0]][action_list[-1][1]]:
+            # 当path的最后一个值不是food的时候
+            print(f"current position: ({action_list[-1][0]}, {action_list[-1][1]})")
+            print(f"food status: {food[action_list[-1][0]][action_list[-1][1]]}\n")
+
+            # 获取邻居
+            successors = problem.getSuccessors(start_state)
+            # for successor in successors:
+            print(f"current successors: {successors}")
+            break
+
+
 
         """
         在找到食物之前:
@@ -649,47 +680,6 @@ class ClosestDotSearchAgent(SearchAgent):
                         返回食物信息
                 若是墙，忽视此邻居
         """
-
-        # # init the closed set to check if node visited
-        # closed = set()
-
-        # # init the priority queue (the fringe) 是空的
-        # fringePrioQueue = util.PriorityQueue()
-
-        # # insert the start state into the fringe
-        # closed.add(startPosition)
-
-        # # insert the neighbours of the initial state into the fringe
-        # # also insert a list (the path required to get to the node)
-        # for child_node in problem.getSuccessors(startPosition):
-        #     print(f"child_node: {child_node}")
-        #     fringePrioQueue.update(
-        #         [child_node, [child_node[1]]], problem.getCostOfActions([child_node[1]])
-        #     )
-        #     print(f"cost of actions: {problem.getCostOfActions([child_node[1]])}")
-
-        # # when there are neighbors
-        # while not fringePrioQueue.isEmpty():
-        #     node = fringePrioQueue.pop()
-        #     print(f"node: {node}")
-
-        #     # return the solution
-        #     if problem.isGoalState(node[0][0]):
-        #         # return the cost
-        #         print("Find Goal State")
-        #         return node[1]
-
-        #     # if the node has never been visited, add it to visited list (closed)
-        #     # and update its neighbors' cost
-        #     if node[0][0] not in closed:
-        #         closed.add(node[0][0])
-
-        #         for child_node in problem.getSuccessors(node[0][0]):
-        #             print(f"child node in neighbor list: {child_node}")
-        #             fringePrioQueue.update(
-        #                 [child_node, node[1] + [child_node[1]]],
-        #                 problem.getCostOfActions(node[1] + [child_node[1]]),
-        #             )
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
