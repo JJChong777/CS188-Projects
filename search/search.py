@@ -105,12 +105,12 @@ def depthFirstSearch(problem: SearchProblem):
     # just putting the start state here for convenience
     start_state = problem.getStartState()
 
+    # add the start state to the stack
+
     # insert the neighbours of the initial state into the fringe
     # also insert the stuff into the backtracking dictionary
     for child_node in problem.getSuccessors(start_state):
         fringeStack.push(child_node)
-        backtrack[child_node] = start_state
-        parent_child[start_state] = child_node
 
     while not fringeStack.isEmpty():
         state, direction, _ = fringeStack.pop()
@@ -119,20 +119,6 @@ def depthFirstSearch(problem: SearchProblem):
         if problem.isGoalState(state):
             print(f"backtrack: {backtrack}")
             solution = []
-            while state != start_state:
-                for (node, direction, _), prev_state in backtrack.items():
-                    if (
-                        node == state
-                        and prev_state in parent_child
-                        and parent_child[prev_state] == (state, direction, 1)
-                    ):
-                        # print("adding direction")
-                        solution.append(direction)
-                        state = prev_state
-                        break
-            solution.reverse()
-            print(f"solution: {solution}")
-            print(f"parent_child = {parent_child}")
             return solution
 
         if state not in closed:
@@ -202,25 +188,53 @@ def breadthFirstSearch(problem: SearchProblem):
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    # visited queue
-    prioQueueWithFunction = util.PriorityQueueWithFunction(problem.getCostOfActions)
+    # init the closed set to check if node visited
+    closed = set()
 
-    # action list
-    action = []
+    # init the dfs stack (the fringe) stack 是空的
+    fringePrioQueueWithFunc = util.PriorityQueueWithFunction(problem.getCostOfActions)
 
-    # get start point
-    start_pos = problem.getStartState()
-    # find neighbors for every node 每个位置找邻居
-    successors = problem.getSuccessors(start_pos)
-    # calculate cost of every neighbor 对每个邻居，计算一遍cost
-    for successor in successors:
-        print(f"successor: {successor}")
-        # push the neighbor with the least cost into the visited queue
-        prioQueueWithFunction.push(successor[1])
+    # backtrack dictionary to return the list of directions
+    backtrack = {}
 
-        print(f"Total cost: {prioQueueWithFunction.priorityFunction(action)}")
-    # 选取
-    # util.raiseNotDefined()
+    # parent child relationship dictionary
+    parent_child = {}
+
+    # just putting the start state here for convenience
+    start_state = problem.getStartState()
+
+    # insert the neighbours of the initial state into the fringe
+    # also insert the stuff into the backtracking dictionary
+    for child_node in problem.getSuccessors(start_state):
+        fringePrioQueueWithFunc.push(child_node)
+        backtrack[child_node] = start_state
+        parent_child[start_state] = child_node
+
+    while not fringePrioQueueWithFunc.isEmpty():
+        state, direction, _ = fringePrioQueueWithFunc.pop()
+
+        # return the solution
+        if problem.isGoalState(state):
+            # print(f"backtrack: {backtrack}")
+            solution = []
+            while state != start_state:
+                for (node, direction, _), prev_state in backtrack.items():
+                    if node == state:
+                        # print("adding direction")
+                        solution.append(direction)
+                        state = prev_state
+                        break
+            solution.reverse()
+            # print(f"solution: {solution}")
+            # print(f"parent_child = {parent_child}")
+            return solution
+
+        if state not in closed:
+            closed.add(state)
+            for child_node in problem.getSuccessors(state):
+                fringePrioQueueWithFunc.push(child_node)
+                backtrack[child_node] = state
+                parent_child[state] = child_node
 
 
 def nullHeuristic(state, problem=None):
