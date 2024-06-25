@@ -348,9 +348,10 @@ class CornersProblem(search.SearchProblem):
         start_state = tuple(value + 1 for value in self.startingPosition)
         # start_state = (start_state_coord,[])
         print(f"start state: {start_state}")
-        # util.raiseNotDefined()
+
         # create visited list
         self._visited = []
+
         return start_state
 
     def isGoalState(self, state: Any):
@@ -360,7 +361,6 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         # 若state in self.corners，返回True；否则False
         # state should be like (position, direction)
-        # return state in self.corners
         print(f"self.corners: {self.corners}")
         print(f"your state: {state}")
         print(f"visited corner: {self._visited}")
