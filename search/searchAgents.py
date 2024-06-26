@@ -645,55 +645,39 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-        # print(f"walls: \n{walls[1][1]}")
-        # print(f"food: \n{food[1][1]}")
-        # print(f"start position: {startPosition}")
-        
-        # 初始化队列和起始状态
-        startState = problem.getStartState()
-        # print("HERE\n")
+        # initialize frontier
         frontier = util.Queue()
-        # print("HERE\n")
-        frontier.push((startState, []))
-        # print("HERE\n")
+        frontier.push((startPosition, [])) 
+        # list about visited node
         visited = []
+        # initialize current position
+        current_position = startPosition
+        # save the position of closest_food
+        closest_food = []
 
-        # print("HERE\n")
+        # when we didn't find the closest food, keep finding
+        while len(closest_food) == 0:
+            # get current info
+            current_position, path = frontier.pop()
 
-        while not frontier.isEmpty():
-            state, actions = frontier.pop()
-            # print(f"state: {state}, actions: {actions}\n")
+            if current_position in visited:
+                # print("is visited")
+                # ignore visited position
+                continue
 
-            # 如果是目标状态，返回路径
-            if problem.isGoalState(state):
-                # print(f"Is Goal: {state}")
-                return actions
+            visited.append(current_position)
+            x, y = current_position
 
-            if state not in visited:
-                visited.append(state)
-                # print(f"visited: {visited}")
-                for nextState, action, cost in problem.getSuccessors(state):
-                    newActions = actions + [action]
-                    frontier.push((nextState, newActions))
+            if food[x][y]:  # if we have food here 检查当前位置是否有食物
+                closest_food.append((x,y))
+                return path  # return the path to the closest food 找到最近的食物，返回路径
 
-        """
-        在找到食物之前:
-            获取当前节点的所有邻居
-            对于每一个邻居：
-                (检查邻居是否为墙)
-                若不是墙，检查邻居是否为食物
-                    若不是食物
-                        (当前节点用于计算cost,BFS版)
-                        记录来源的节点
-                    若是食物
-                        记录来到此处的路径和cost
-                        返回食物信息
-                若是墙，忽视此邻居
-        """
-
-
-
+            # get successors of current position
+            for nextState, action, cost in problem.getSuccessors(current_position):
+                if nextState not in visited:
+                    # update path
+                    newPath = path + [action]
+                    frontier.push((nextState, newPath))  # 将相邻坐标和新的路径添加到队列中
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -730,8 +714,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
-        print(f"food: {self.food}")
-        print(f"your state: {state}")
         if self.food[x][y]:
             return True
         return False
