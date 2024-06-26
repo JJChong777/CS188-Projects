@@ -592,10 +592,10 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    print("get to foodHeuristic function")
+    # print("get to foodHeuristic function")
     # position, foodGrid = state
     foodPositions = foodGrid.asList()
-    print(f"position: ({position[0]},{position[1]})")
+    # print(f"position: ({position[0]},{position[1]})")
 
     if not foodPositions:
         return 0
@@ -604,10 +604,12 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     distances = []
     for food in foodPositions:
         # calculate distance
-        print(f"foodgird state: ({foodGrid[food[0]][food[1]]})")
+        # print(f"foodgird state: ({foodGrid[food[0]][food[1]]})")
         # print(f"food: {food}")
         # distance = abs(position[0] - food[0]) + abs(position[1] - food[1])
-        distance = mazeDistance(point1=position,point2=food,gameState=problem.startingGameState)
+        distance = mazeDistance(
+            point1=position, point2=food, gameState=problem.startingGameState
+        )
         # print(f"distance: {distance}")
         distances.append(distance)
 
@@ -616,7 +618,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
 
     # 返回这些距离中的最大值
     max_distance = max(distances)
-    print(f"max distance: {max_distance}\n")
+    # print(f"max distance: {max_distance}\n")
     return max_distance
     # return distance
     # return 1
