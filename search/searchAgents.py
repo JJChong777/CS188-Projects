@@ -337,6 +337,7 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print("Warning: no food in corner " + str(corner))
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
+        self.startingGameState = startingGameState
 
     def getStartState(self):
         """
@@ -352,8 +353,8 @@ class CornersProblem(search.SearchProblem):
         # create start_state with position and corner_counter
         start_state = (self.startingPosition, corner_counter)
         # start_state = (start_state_coord,[])
-        print(f"start state: {start_state}\n")
-        print(f"corners: {corner_counter}")
+        # print(f"start state: {start_state}\n")
+        # print(f"corners: {corner_counter}")
 
         return start_state
 
@@ -363,7 +364,7 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         # 若state in self.corners，返回True；否则False
-        print(f"\ncheck goal state: {state}")
+        # print(f"\ncheck goal state: {state}")
         corner_list = list(state[1])
         corner_counter = 0
         for corner in corner_list:
@@ -428,9 +429,9 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            print("\n")
+            # print("\n")
 
-            print(f"state in getSuccessors: {state}")
+            # print(f"state in getSuccessors: {state}")
             # x, y = state[0]
             x = state[0][0]
             y = state[0][1]
@@ -444,13 +445,14 @@ class CornersProblem(search.SearchProblem):
             hitsWall = self.walls[nextx][nexty]  # 返回值为True/False
 
             # save the result
-            if hitsWall:  # 如果是墙
-                print(f"hitsWall: {hitsWall}")
-            else:  # 如果不是墙，加入邻居列表
+            # if hitsWall:  # 如果是墙
+            # print(f"hitsWall: {hitsWall}")
+            # else:  # 如果不是墙，加入邻居列表
+            if not hitsWall:
                 corners = state[1]
-                print(f"next state corners: {corners}")
+                # print(f"next state corners: {corners}")
                 next_state = ((nextx, nexty), state[1])
-                print(f"new successor: {next_state}")
+                # print(f"new successor: {next_state}")
                 if next_state[0] in self.corners:
                     # 当前访问的是corner
                     corner_list = list(corners)
@@ -501,8 +503,28 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    print("get to cornersHeuristic")
-    return 0  # Default to trivial solution
+    # print("get to cornersHeuristic")
+    # for the corners heuristic, one idea is to get the manhattan distance to the furthest away corner
+    cornerDistances = []
+    cornersList = list(corners)
+    # print(f"state: {state}")
+    if problem.isGoalState(state):
+        return 0
+    unvcIdxs = []
+    # print(f"visitedList: {list(state[1])}")
+    for index, visited in enumerate(list(state[1])):
+        # print(f"index, visited: {index}, {visited}")
+        if not visited:
+            unvcIdxs.append(index)
+    # print(f"unvcIdxs: {unvcIdxs}")
+    for unvcI in unvcIdxs:
+        # print(f"cornerxy: {cornerxy}")
+        corner = cornersList[unvcI]
+        cornerDist = mazeDistance(corner, state[0], problem.startingGameState)
+        cornerDistances.append(cornerDist)
+    maxCornerDist = max(cornerDistances)
+    return maxCornerDist
+    # return 0  # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):
@@ -611,8 +633,14 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    print("get to foodHeuristic function")
-    return 0
+    # print("get to foodHeuristic function")
+    totalCostToFood = 0
+    print(f"food grid: {foodGrid}")
+    print(f"food grid list: {foodGrid.asList()}")
+    for foodxy in foodGrid.asList():
+        if foodGrid[foodxy[0]-2][foodxy[1]-2] == "T":
+            totalCostToFood += mazeDistance(foodxy, position, problem.startingGameState)
+    return totalCostToFood
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -695,6 +723,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         self.startState = gameState.getPacmanPosition()
         self.costFn = lambda x: 1
         self._visited, self._visitedlist, self._expanded = {}, [], 0  # DO NOT CHANGE
+        self.startingGameState = gameState
 
     def isGoalState(self, state: Tuple[int, int]):
         """
