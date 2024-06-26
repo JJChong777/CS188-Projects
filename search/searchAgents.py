@@ -337,6 +337,7 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print("Warning: no food in corner " + str(corner))
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
+        self.startingGameState = startingGameState
 
     def getStartState(self):
         """
@@ -497,8 +498,28 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    print("get to cornersHeuristic")
-    return 0  # Default to trivial solution
+    # print("get to cornersHeuristic")
+    # for the corners heuristic, one idea is to get the manhattan distance to the furthest away corner
+    cornerDistances = []
+    cornersList = list(corners)
+    # print(f"state: {state}")
+    if problem.isGoalState(state):
+        return 0
+    unvcIdxs = []
+    # print(f"visitedList: {list(state[1])}")
+    for index, visited in enumerate(list(state[1])):
+        # print(f"index, visited: {index}, {visited}")
+        if not visited:
+            unvcIdxs.append(index)
+    # print(f"unvcIdxs: {unvcIdxs}")
+    for unvcI in unvcIdxs:
+        # print(f"cornerxy: {cornerxy}")
+        corner = cornersList[unvcI]
+        cornerDist = mazeDistance(corner, state[0], problem.startingGameState)
+        cornerDistances.append(cornerDist)
+    maxCornerDist = max(cornerDistances)
+    return maxCornerDist
+    # return 0  # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):
@@ -647,7 +668,7 @@ class ClosestDotSearchAgent(SearchAgent):
         "*** YOUR CODE HERE ***"
         # initialize frontier
         frontier = util.Queue()
-        frontier.push((startPosition, [])) 
+        frontier.push((startPosition, []))
         # list about visited node
         visited = []
         # initialize current position
@@ -669,15 +690,20 @@ class ClosestDotSearchAgent(SearchAgent):
             x, y = current_position
 
             if food[x][y]:  # if we have food here 检查当前位置是否有食物
-                closest_food.append((x,y))
-                return path  # return the path to the closest food 找到最近的食物，返回路径
+                closest_food.append((x, y))
+                return (
+                    path  # return the path to the closest food 找到最近的食物，返回路径
+                )
 
             # get successors of current position
             for nextState, action, cost in problem.getSuccessors(current_position):
                 if nextState not in visited:
                     # update path
                     newPath = path + [action]
-                    frontier.push((nextState, newPath))  # 将相邻坐标和新的路径添加到队列中
+                    frontier.push(
+                        (nextState, newPath)
+                    )  # 将相邻坐标和新的路径添加到队列中
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
