@@ -345,16 +345,11 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        # print(f"self.startingPosition: {self.startingPosition}")
-
         # initialize tuple of corners
         corner_counter = tuple([False, False, False, False])
 
         # create start_state with position and corner_counter
         start_state = (self.startingPosition, corner_counter)
-        # start_state = (start_state_coord,[])
-        # print(f"start state: {start_state}\n")
-        # print(f"corners: {corner_counter}")
 
         return start_state
 
@@ -374,34 +369,6 @@ class CornersProblem(search.SearchProblem):
             return True
         else:
             return False
-        # 如果corner没有访问过，设定为True
-        # if state[1][state[0]] == False:
-        #     state[1][state[0]] = True
-        #     countVisited = 0
-        #     for visitFlag in state[1].values():
-        #         if visitFlag:
-        #             countVisited += 1
-        #     if countVisited == 4:
-        #         print("\nAll 4 corners visited")
-        #         return True
-        #     else:
-        #         print(f"\nOnly {countVisited} corners visited")
-        #         return False
-
-        # else:
-        # 当前访问的不是corner
-        # return False
-
-        #     else:
-        #         countVisited
-        #         for visitFlag in state[1].values():
-
-        #         # 不是最后一个，修改计数器
-        #         state = (state[0], state[1] + 1)
-        #         print(f"Not the last corner: {state}")
-        #         return False
-        # print(f"{state} is not corner")
-        # return False
 
     def getSuccessors(self, state: Any):
         """
@@ -429,9 +396,6 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            # print("\n")
-
-            # print(f"state in getSuccessors: {state}")
             x = state[0][0]
             y = state[0][1]
 
@@ -499,7 +463,6 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    # print("get to cornersHeuristic")
     # for the corners heuristic, one idea is to get the manhattan distance to the furthest away corner
     cornerDistances = []
     cornersList = list(corners)
@@ -630,7 +593,33 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
     print("get to foodHeuristic function")
-    return 0
+    # position, foodGrid = state
+    foodPositions = foodGrid.asList()
+    print(f"position: ({position[0]},{position[1]})")
+
+    if not foodPositions:
+        return 0
+
+    # 计算 Pacman 当前位置到每个食物位置的距离
+    distances = []
+    for food in foodPositions:
+        # calculate distance
+        print(f"foodgird state: ({foodGrid[food[0]][food[1]]})")
+        # print(f"food: {food}")
+        # distance = abs(position[0] - food[0]) + abs(position[1] - food[1])
+        distance = mazeDistance(point1=position,point2=food,gameState=problem.startingGameState)
+        # print(f"distance: {distance}")
+        distances.append(distance)
+
+        # update foodgrid in state
+        # state[1][food[0]][food[1]]=False
+
+    # 返回这些距离中的最大值
+    max_distance = max(distances)
+    print(f"max distance: {max_distance}\n")
+    return max_distance
+    # return distance
+    # return 1
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -683,7 +672,6 @@ class ClosestDotSearchAgent(SearchAgent):
             current_position, path = frontier.pop()
 
             if current_position in visited:
-                # print("is visited")
                 # ignore visited position
                 continue
 
