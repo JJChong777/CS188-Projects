@@ -431,16 +431,12 @@ class CornersProblem(search.SearchProblem):
             print("\n")
 
             print(f"state in getSuccessors: {state}")
-            # x, y = state[0]
             x = state[0][0]
             y = state[0][1]
-            # print(f"(x, y): ({x}, {y})")
-            # print(f"current action: {action}")
 
             # calculate if the successors are walls 计算是否是墙
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            # print(f"(nextx, nexty): ({nextx},{nextx})")
             hitsWall = self.walls[nextx][nexty]  # 返回值为True/False
 
             # save the result
@@ -650,9 +646,36 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
-        print(f"walls: \n{walls[1][1]}")
-        print(f"food: \n{food[1][1]}")
-        print(f"start position: {startPosition}")
+        # print(f"walls: \n{walls[1][1]}")
+        # print(f"food: \n{food[1][1]}")
+        # print(f"start position: {startPosition}")
+        
+        # 初始化队列和起始状态
+        startState = problem.getStartState()
+        # print("HERE\n")
+        frontier = util.Queue()
+        # print("HERE\n")
+        frontier.push((startState, []))
+        # print("HERE\n")
+        visited = []
+
+        # print("HERE\n")
+
+        while not frontier.isEmpty():
+            state, actions = frontier.pop()
+            # print(f"state: {state}, actions: {actions}\n")
+
+            # 如果是目标状态，返回路径
+            if problem.isGoalState(state):
+                # print(f"Is Goal: {state}")
+                return actions
+
+            if state not in visited:
+                visited.append(state)
+                # print(f"visited: {visited}")
+                for nextState, action, cost in problem.getSuccessors(state):
+                    newActions = actions + [action]
+                    frontier.push((nextState, newActions))
 
         """
         在找到食物之前:
@@ -668,6 +691,8 @@ class ClosestDotSearchAgent(SearchAgent):
                         返回食物信息
                 若是墙，忽视此邻居
         """
+
+
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -706,7 +731,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
         print(f"food: {self.food}")
-        if self.food == (x, y):
+        print(f"your state: {state}")
+        if self.food[x][y]:
             return True
         return False
 
