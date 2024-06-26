@@ -353,8 +353,8 @@ class CornersProblem(search.SearchProblem):
         # create start_state with position and corner_counter
         start_state = (self.startingPosition, corner_counter)
         # start_state = (start_state_coord,[])
-        print(f"start state: {start_state}\n")
-        print(f"corners: {corner_counter}")
+        # print(f"start state: {start_state}\n")
+        # print(f"corners: {corner_counter}")
 
         return start_state
 
@@ -364,7 +364,7 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         # 若state in self.corners，返回True；否则False
-        print(f"\ncheck goal state: {state}")
+        # print(f"\ncheck goal state: {state}")
         corner_list = list(state[1])
         corner_counter = 0
         for corner in corner_list:
@@ -429,9 +429,9 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            print("\n")
+            # print("\n")
 
-            print(f"state in getSuccessors: {state}")
+            # print(f"state in getSuccessors: {state}")
             x = state[0][0]
             y = state[0][1]
 
@@ -441,13 +441,14 @@ class CornersProblem(search.SearchProblem):
             hitsWall = self.walls[nextx][nexty]  # 返回值为True/False
 
             # save the result
-            if hitsWall:  # 如果是墙
-                print(f"hitsWall: {hitsWall}")
-            else:  # 如果不是墙，加入邻居列表
+            # if hitsWall:  # 如果是墙
+            # print(f"hitsWall: {hitsWall}")
+            # else:  # 如果不是墙，加入邻居列表
+            if not hitsWall:
                 corners = state[1]
-                print(f"next state corners: {corners}")
+                # print(f"next state corners: {corners}")
                 next_state = ((nextx, nexty), state[1])
-                print(f"new successor: {next_state}")
+                # print(f"new successor: {next_state}")
                 if next_state[0] in self.corners:
                     # 当前访问的是corner
                     corner_list = list(corners)
