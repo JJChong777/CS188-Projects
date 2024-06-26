@@ -435,13 +435,10 @@ class CornersProblem(search.SearchProblem):
             # x, y = state[0]
             x = state[0][0]
             y = state[0][1]
-            # print(f"(x, y): ({x}, {y})")
-            # print(f"current action: {action}")
 
             # calculate if the successors are walls 计算是否是墙
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            # print(f"(nextx, nexty): ({nextx},{nextx})")
             hitsWall = self.walls[nextx][nexty]  # 返回值为True/False
 
             # save the result
@@ -638,7 +635,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     print(f"food grid: {foodGrid}")
     print(f"food grid list: {foodGrid.asList()}")
     for foodxy in foodGrid.asList():
-        if foodGrid[foodxy[0]-2][foodxy[1]-2] == "T":
+        if foodGrid[foodxy[0] - 2][foodxy[1] - 2] == "T":
             totalCostToFood += mazeDistance(foodxy, position, problem.startingGameState)
     return totalCostToFood
 
@@ -734,8 +731,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
-        print(f"food: {self.food}")
-        if self.food == (x, y):
+        if self.food[x][y]:
             return True
         return False
 
