@@ -96,7 +96,7 @@ class ReflexAgent(Agent):
         # find the manhattan distance from pacman's position to the furthest uneaten food
         foodDistList = []
         for foodPos in newFoodList:
-            if newFood[foodPos[0]][foodPos[1]]:
+            if newFood[foodPos[0]][foodPos[1]] == True:
                 foodDistList.append(manhattanDistance(foodPos, newPos))
         maxFoodDist = max(foodDistList)
 
@@ -176,6 +176,29 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        numAgents = gameState.getNumAgents()
+        pacmanActions = gameState.getLegalActions(0)
+        multiGhostActions = [
+            gameState.getLegalActions(agentIndex) for agentIndex in range(1, numAgents)
+        ]
+        if len(pacmanActions) == 0:
+            print("No more legal moves terminal state")
+
+        # for loop through each of pacman's legal actions
+        for pacAct in pacmanActions:
+            # for loop through each of the resulting game states (after pacman has made a legal move)
+            for pacGameState in gameState.generateSuccessor(0, pacAct):
+                # for loop through each of the ghosts legal actions
+                for (ghostIndex, ghostActions) in enumerate(multiGhostActions):
+                    for ghostAct in ghostActions:
+                        for ghostGameState in gameState.generateSuccessor(ghostIndex + 1, ghostAct):
+                            
+
+            # this prints out another gameState object, not helpful
+            # print(f"successor game state: {gameState.generateSuccessor(0, pacAct)}")
+        # print(f"Pacman actions: {pacmanActions}")
+        # print(f"Ghost actions: {ghostActions}")
+
         util.raiseNotDefined()
 
 
