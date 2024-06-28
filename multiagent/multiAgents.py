@@ -174,30 +174,31 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 return 1
             if gameState.isLose():
                 return 0
+
             if agentIndex == 0:
-                pacmanActions = gameState.getLegalActions(0)
-                for pacAct in pacmanActions:
-                    return max_value(pacAct, gameState)
+                return max_value(agentIndex, gameState)
             if agentIndex > 0:
-                ghostActions = gameState.getLegalActions(agentIndex):
-                for ghostAct in ghostActions:
-                    return min_value(ghostAct, gameState)
+                # get the ghost actions
+                return min_value(agentIndex, gameState)
 
-        def max_value(action, agentIndex, gameState: GameState):
+        def max_value(agentIndex, gameState: GameState):
             v = -float("inf")
-            for successor in gameState.generatePacmanSuccessor(action):
-                v = max(
-                    v, value(agentIndex, gameState)
-                )
+            actions = gameState.getLegalActions(0)
+            for action in actions:
+                successorState = gameState.generateSuccessor(action)
+                v = max(v, value(agentIndex, successorState))
+            return v
 
-        def min_value(action, agentIndex, gameState: GameState):
+        def min_value(agentIndex, gameState: GameState):
             v = float("inf")
             for successor in gameState.generateSuccessor(agentIndex, action):
-                v = min(
-                    v, value(agentIndex, gameState)
-                )
+                v = min(v, value(agentIndex, gameState))
+            return v
 
-        util.raiseNotDefined()
+        for pacAct in pacmanActions:
+            nextGameState = gameState.generatePacmanSuccessor(pacAct)
+            nextGameState.getScore()
+        # util.raiseNotDefined()
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
