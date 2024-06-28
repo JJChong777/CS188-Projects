@@ -80,39 +80,26 @@ class ReflexAgent(Agent):
         newFoodList = newFood.asList()
         score = successorGameState.getScore()
         ghostPositions = successorGameState.getGhostPositions()
-        # print(f"successorGameState: {successorGameState}")
-        # print(f"newPos: {newPos}")
-        # print(f"newFood: {newFood}")
-        # print(f"action: {action}")
-        # print(f"newFood asList: {newFood.asList()}")
-        # for ghoststate in newGhostStates:
-        #     print(f"Ghost State: {ghoststate}")
-        # print(f"newScaredTimes: {newScaredTimes}")
-        # print(f"score: {successorGameState.getScore()}")
-        # for ghostpos in successorGameState.getGhostPositions():
-        #     print(f"ghost pos: {ghostpos}")
-        print(f"capsule position: {successorGameState.getCapsules()}")
-
-        # find the manhattan distance from pacman's position to the furthest uneaten food
         foodDistList = []
         for foodPos in newFoodList:
             if newFood[foodPos[0]][foodPos[1]] == True:
-                foodDistList.append(manhattanDistance(foodPos, newPos))
-        maxFoodDist = max(foodDistList)
+                foodDist = manhattanDistance(foodPos, newPos)
+                if foodDist == 0:
+                    foodDistList.append(1)
+                else:
+                    foodDistList.append(1 / manhattanDistance(foodPos, newPos))
+        sumFoodDist = sum(foodDistList)
 
         # find the manhattan distance from pacman's position to the nearest ghost
         ghostDistList = []
         for ghostPos in ghostPositions:
-            ghostDistList.append(manhattanDistance(ghostPos, newPos))
-        minGhostDist = min(ghostDistList)
-
-        # find the manhattan distance from pacman's position to the capsule
-        # but I just realized there is no way to tell if a capsule is eaten
-
-        # print(
-        #     f"heuristic: {successorGameState.getScore() + (maxFoodDist) + (minGhostDist)}"
-        # )
-        return 0.7 * successorGameState.getScore() + (maxFoodDist) - 2 * (minGhostDist)
+            ghostDist = manhattanDistance(ghostPos, newPos)
+            if ghostDist == 0:
+                ghostDistList.append(0)
+            else:
+                ghostDistList.append(1 / manhattanDistance(ghostPos, newPos))
+        sumGhostDist = sum(ghostDistList)
+        return 0.7 * score + (sumFoodDist) - 2 * (sumGhostDist)
 
 
 def scoreEvaluationFunction(currentGameState: GameState):
@@ -181,23 +168,34 @@ class MinimaxAgent(MultiAgentSearchAgent):
         multiGhostActions = [
             gameState.getLegalActions(agentIndex) for agentIndex in range(1, numAgents)
         ]
-        if len(pacmanActions) == 0:
-            print("No more legal moves terminal state")
 
-        # for loop through each of pacman's legal actions
-        for pacAct in pacmanActions:
-            # for loop through each of the resulting game states (after pacman has made a legal move)
-            for pacGameState in gameState.generateSuccessor(0, pacAct):
-                # for loop through each of the ghosts legal actions
-                for (ghostIndex, ghostActions) in enumerate(multiGhostActions):
-                    for ghostAct in ghostActions:
-                        for ghostGameState in gameState.generateSuccessor(ghostIndex + 1, ghostAct):
-                            
+        def value(agentIndex, gameState: GameState):
+            if gameState.isWin():
+                return 1
+            if gameState.isLose():
+                return 0
+            if agentIndex == 0:
+                pacmanActions = gameState.getLegalActions(0)
+                for pacAct in pacmanActions:
+                    return max_value(pacAct, gameState)
+            if agentIndex > 0:
+                ghostActions = gameState.getLegalActions(agentIndex):
+                for ghostAct in ghostActions:
+                    return min_value(ghostAct, gameState)
 
-            # this prints out another gameState object, not helpful
-            # print(f"successor game state: {gameState.generateSuccessor(0, pacAct)}")
-        # print(f"Pacman actions: {pacmanActions}")
-        # print(f"Ghost actions: {ghostActions}")
+        def max_value(action, agentIndex, gameState: GameState):
+            v = -float("inf")
+            for successor in gameState.generatePacmanSuccessor(action):
+                v = max(
+                    v, value(agentIndex, gameState)
+                )
+
+        def min_value(action, agentIndex, gameState: GameState):
+            v = float("inf")
+            for successor in gameState.generateSuccessor(agentIndex, action):
+                v = min(
+                    v, value(agentIndex, gameState)
+                )
 
         util.raiseNotDefined()
 
