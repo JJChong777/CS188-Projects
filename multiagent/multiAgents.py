@@ -171,9 +171,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         def value(agentIndex, gameState: GameState):
             if gameState.isWin():
-                return 1
+                return nextGameState.getScore()
             if gameState.isLose():
-                return 0
+                return nextGameState.getScore()
 
             if agentIndex == 0:
                 return max_value(agentIndex, gameState)
@@ -183,21 +183,24 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         def max_value(agentIndex, gameState: GameState):
             v = -float("inf")
-            actions = gameState.getLegalActions(0)
+            actions = gameState.getLegalActions(agentIndex)
             for action in actions:
                 successorState = gameState.generateSuccessor(action)
                 v = max(v, value(agentIndex, successorState))
+            print(f"max v: {v}")
             return v
 
         def min_value(agentIndex, gameState: GameState):
             v = float("inf")
-            for successor in gameState.generateSuccessor(agentIndex, action):
-                v = min(v, value(agentIndex, gameState))
+            actions = gameState.getLegalActions(agentIndex)
+            for action in actions:
+                successorState = gameState.generateSuccessor(action)
+                v = min(v, value(agentIndex, successorState))
+            print(f"min v: {v}")
             return v
 
         for pacAct in pacmanActions:
-            nextGameState = gameState.generatePacmanSuccessor(pacAct)
-            nextGameState.getScore()
+            nextGameState = gameState.generateSuccessor(0, pacAct)
         # util.raiseNotDefined()
 
 
