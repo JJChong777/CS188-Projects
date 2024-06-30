@@ -39,19 +39,23 @@ class ReflexAgent(Agent):
         Just like in the previous project, getAction takes a GameState and returns
         some Directions.X for some X in the set {NORTH, SOUTH, WEST, EAST, STOP}
         """
-        # Collect legal moves and successor states
+        # Collect legal moves and successor states 获取当前状态下的所有合法动作
         legalMoves = gameState.getLegalActions()
 
         # Choose one of the best actions
+        # 为每个合法动作计算评估分数。
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
+        # 找到最高的评估分数。
         bestScore = max(scores)
+        # 找到所有具有最高分数的动作索引
         bestIndices = [
             index for index in range(len(scores)) if scores[index] == bestScore
         ]
+        # 随机选择一个具有最高分数的动作。
         chosenIndex = random.choice(bestIndices)  # Pick randomly among the best
 
         "Add more of your code here if you want to"
-
+        # 返回选择的动作
         return legalMoves[chosenIndex]
 
     def evaluationFunction(self, currentGameState: GameState, action):
@@ -70,14 +74,21 @@ class ReflexAgent(Agent):
         to create a masterful evaluation function.
         """
         # Useful information you can extract from a GameState (pacman.py)
+        # 生成执行给定动作后的下一个状态
         successorGameState = currentGameState.generatePacmanSuccessor(action)
+        # 获取 Pacman 在邻居中的新位置
         newPos = successorGameState.getPacmanPosition()
+        # 获取继承状态中的食物布置
         newFood = successorGameState.getFood()
+        # 获取下一个状态中的幽灵状态
         newGhostStates = successorGameState.getGhostStates()
+        # 获取每个幽灵的受惊吓时间
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
+        # 列表形式的食物
         newFoodList = newFood.asList()
+        # 获取邻居状态的得分
         score = successorGameState.getScore()
         ghostPositions = successorGameState.getGhostPositions()
         foodDistList = []
@@ -163,6 +174,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        print("get to getAction function!")
         numAgents = gameState.getNumAgents()
         pacmanActions = gameState.getLegalActions(0)
         multiGhostActions = [
@@ -214,6 +226,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        print("get to alphabetaAgent!")
         util.raiseNotDefined()
 
 
@@ -230,7 +243,98 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Goal: choose an action that can maximize expected return
+        # 选择一个能最大化其期望收益的动作
+        def value(state, depth, agentIndex):
+            # 计算每个动作的预期价值
+
+            # Terminal state or depth limit reached
+            if state.isWin() or state.isLose() or depth == self.depth:
+                # 若满足终止条件，即胜利、失败或达到最大深度，返回当前状态的评估值
+                # If the termination condition is met, return evaluation value
+                return self.evaluationFunction(state)
+            
+            # For Pacman: max_value
+            if agentIndex == 0:
+                # 如果到达了最大深度，则返回评估函数的值
+                return max_value(state, depth)
+            
+            # For Ghosts: expected_value 
+            else:
+                # 如果到达了终端状态（赢或输）则返回评估函数的值
+                return exp_value(state, depth, agentIndex)
+
+        # Pacman:
+        def max_value(state, depth):
+            # 计算当前状态下的最大值
+            print("max value calculation")
+
+            # initialize maximal(alpha) to negative infinity 初始化最大值为负无穷
+            v = float('-inf')
+            for action in state.getLegalActions(0):
+                # 遍历所有合法动作，生成继承状态
+                # for every action, get neighbors (successors)
+                successor = state.generateSuccessor(0, action)
+                # 递归调用 value 函数来获取继承状态的值。
+                # update the maximal (alpha)
+                v = max(v, value(successor, depth, 1))
+            print(f"v is: {v}\n")
+            return v
+
+        # Goast:
+        def exp_value(state, depth, agentIndex):
+            print("expected value calculation")
+            # initialize expected value v
+            v = 0
+            # get all actions
+            actions = state.getLegalActions(agentIndex)
+            # 计算每个动作的概率，这里每个动作的概率相等?
+            # calculate probability of actions
+            p = 1.0 / len(actions)  
+
+            for action in actions:
+                # 获取邻居信息
+                # get neighbors
+                successor = state.generateSuccessor(agentIndex, action)
+                # 检查当前代理是否是最后一个代理（最后一个鬼）
+                # if this is the last ghost
+                if agentIndex == state.getNumAgents() - 1:  # Last ghost
+                    # 递归调用 value 函数获取继承状态的值，并乘以动作的概率 p；
+                    # 将加权值累加到 v 中
+                    # update v
+                    v += p * value(successor, depth + 1, 0)
+                else:
+                    # 递归调用 value 函数来获取继承状态的值
+                    # update v
+                    v += p * value(successor, depth, agentIndex + 1)
+            print(f"v is: {v}\n")
+            return v
+
+        # Get the best action for Pacman
+        legalMoves = gameState.getLegalActions(0)
+        print(f"legal moves: {legalMoves}")
+        bestScore = float('-inf')
+        bestAction = None
+
+        # for every action
+        for action in legalMoves:
+            # get neighbors state of the action
+            successor = gameState.generateSuccessor(0, action)
+            # expected score
+            score = value(successor, 0, 1)
+            # if the expected score is bigger than the current best score, 
+            # update best score and action
+            # 如果该动作的预期价值比当前最佳值大，更新最佳值和最佳动作
+            print(f"current score: {score}")
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+                print(f"new best score: {score}")
+        print(f"best score: {bestScore}")
+        print(f"best action: {bestAction}")
+        return bestAction
+
+        
 
 
 def betterEvaluationFunction(currentGameState: GameState):
@@ -241,6 +345,7 @@ def betterEvaluationFunction(currentGameState: GameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+    print("get to betterEvaluationFunction!")
     util.raiseNotDefined()
 
 
