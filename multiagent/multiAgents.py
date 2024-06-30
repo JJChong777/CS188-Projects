@@ -250,24 +250,23 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
             # Terminal state or depth limit reached
             if state.isWin() or state.isLose() or depth == self.depth:
-                # 若满足终止条件，即胜利、失败或达到最大深度，返回当前状态的评估值
+                # 若满足终止条件，即胜利、失败或达到最大深度，返回评估值
                 # If the termination condition is met, return evaluation value
                 return self.evaluationFunction(state)
             
             # For Pacman: max_value
             if agentIndex == 0:
-                # 如果到达了最大深度，则返回评估函数的值
+                # 如果到达了最大深度，则返回此函数的值
                 return max_value(state, depth)
             
             # For Ghosts: expected_value 
             else:
-                # 如果到达了终端状态（赢或输）则返回评估函数的值
+                # 如果到达了终端状态（赢或输）则返回此函数的值
                 return exp_value(state, depth, agentIndex)
 
         # Pacman:
         def max_value(state, depth):
             # 计算当前状态下的最大值
-            print("max value calculation")
 
             # initialize maximal(alpha) to negative infinity 初始化最大值为负无穷
             v = float('-inf')
@@ -278,12 +277,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 # 递归调用 value 函数来获取继承状态的值。
                 # update the maximal (alpha)
                 v = max(v, value(successor, depth, 1))
-            print(f"v is: {v}\n")
             return v
 
         # Goast:
         def exp_value(state, depth, agentIndex):
-            print("expected value calculation")
             # initialize expected value v
             v = 0
             # get all actions
@@ -307,12 +304,11 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                     # 递归调用 value 函数来获取继承状态的值
                     # update v
                     v += p * value(successor, depth, agentIndex + 1)
-            print(f"v is: {v}\n")
             return v
 
         # Get the best action for Pacman
         legalMoves = gameState.getLegalActions(0)
-        print(f"legal moves: {legalMoves}")
+        # print(f"legal moves: {legalMoves}")
         bestScore = float('-inf')
         bestAction = None
 
@@ -325,13 +321,13 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             # if the expected score is bigger than the current best score, 
             # update best score and action
             # 如果该动作的预期价值比当前最佳值大，更新最佳值和最佳动作
-            print(f"current score: {score}")
+            # print(f"current score: {score}")
             if score > bestScore:
                 bestScore = score
                 bestAction = action
-                print(f"new best score: {score}")
-        print(f"best score: {bestScore}")
-        print(f"best action: {bestAction}")
+                # print(f"new best score: {score}")
+        # print(f"best score: {bestScore}")
+        # print(f"best action: {bestAction}")
         return bestAction
 
         
