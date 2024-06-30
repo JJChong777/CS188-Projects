@@ -177,9 +177,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
         # print("get to getAction fgunction!")
 
         def value(state: GameState, depth, agentIndex):
-            print(f"isWin: {state.isWin()}")
-            print(f"isLose: {state.isLose()}")
-            print(f"depth: {depth}")
+            # print(f"isWin: {state.isWin()}")
+            # print(f"isLose: {state.isLose()}")
+            # print(f"depth: {depth}")
             # Terminal state or depth limit reached
             if state.isWin() or state.isLose() or depth == self.depth:
                 # 若满足终止条件，即胜利、失败或达到最大深度，返回评估值
