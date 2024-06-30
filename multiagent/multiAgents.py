@@ -174,45 +174,76 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        print("get to getAction function!")
-        numAgents = gameState.getNumAgents()
-        pacmanActions = gameState.getLegalActions(0)
-        multiGhostActions = [
-            gameState.getLegalActions(agentIndex) for agentIndex in range(1, numAgents)
-        ]
+        # print("get to getAction fgunction!")
 
-        def value(agentIndex, gameState: GameState):
-            if gameState.isWin():
-                return nextGameState.getScore()
-            if gameState.isLose():
-                return nextGameState.getScore()
+        def value(state: GameState, depth, agentIndex):
+            print(f"isWin: {state.isWin()}")
+            print(f"isLose: {state.isLose()}")
+            print(f"depth: {depth}")
+            # Terminal state or depth limit reached
+            if state.isWin() or state.isLose() or depth == self.depth:
+                # 若满足终止条件，即胜利、失败或达到最大深度，返回评估值
+                # If the termination condition is met, return evaluation value
+                return self.evaluationFunction(state)
 
+            # return the max value for pacman
             if agentIndex == 0:
-                return max_value(agentIndex, gameState)
+                return max_value(state, depth)
+
+            # return the min value for the ghosts
             if agentIndex > 0:
                 # get the ghost actions
-                return min_value(agentIndex, gameState)
+                return min_value(state, depth, agentIndex)
 
-        def max_value(agentIndex, gameState: GameState):
+        # pacman's function
+        def max_value(state: GameState, depth):
             v = -float("inf")
-            actions = gameState.getLegalActions(agentIndex)
-            for action in actions:
-                successorState = gameState.generateSuccessor(action)
-                v = max(v, value(agentIndex, successorState))
-            print(f"max v: {v}")
+            for action in state.getLegalActions(0):
+                successor = state.generateSuccessor(0, action)
+                v = max(v, value(successor, depth, 1))
+            # print(f"max v: {v}")
             return v
 
-        def min_value(agentIndex, gameState: GameState):
+        # minimizing function for ghosts
+        def min_value(state: GameState, depth, agentIndex):
             v = float("inf")
-            actions = gameState.getLegalActions(agentIndex)
+            actions = state.getLegalActions(agentIndex)
             for action in actions:
-                successorState = gameState.generateSuccessor(action)
-                v = min(v, value(agentIndex, successorState))
-            print(f"min v: {v}")
+                successor = state.generateSuccessor(agentIndex, action)
+                # 检查当前代理是否是最后一个代理（最后一个鬼）
+                # if this is the last ghost
+                # increment depth by 1
+                if agentIndex == state.getNumAgents() - 1:
+                    v = min(v, value(successor, depth + 1, 0))
+                # find the minimum v that can be obtained by this ghost
+                else:
+                    v = min(v, value(successor, depth, agentIndex + 1))
+            # print(f"min v: {v}")
             return v
 
-        for pacAct in pacmanActions:
-            nextGameState = gameState.generateSuccessor(0, pacAct)
+        # Get the best action for Pacman
+        legalMoves = gameState.getLegalActions(0)
+        # print(f"legal moves: {legalMoves}")
+        bestScore = float("-inf")
+        bestAction = None
+
+        # for every action
+        for action in legalMoves:
+            # get neighbors state of the action
+            successor = gameState.generateSuccessor(0, action)
+            # expected score
+            score = value(successor, 0, 1)
+            # if the expected score is bigger than the current best score,
+            # update best score and action
+            # 如果该动作的预期价值比当前最佳值大，更新最佳值和最佳动作
+            # print(f"current score: {score}")
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+                # print(f"new best score: {score}")
+        # print(f"best score: {bestScore}")
+        # print(f"best action: {bestAction}")
+        return bestAction
         # util.raiseNotDefined()
 
 
@@ -243,6 +274,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
+
         # Goal: choose an action that can maximize expected return
         # 选择一个能最大化其期望收益的动作
         def value(state, depth, agentIndex):
@@ -253,13 +285,13 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 # 若满足终止条件，即胜利、失败或达到最大深度，返回评估值
                 # If the termination condition is met, return evaluation value
                 return self.evaluationFunction(state)
-            
+
             # For Pacman: max_value
             if agentIndex == 0:
                 # 如果到达了最大深度，则返回此函数的值
                 return max_value(state, depth)
-            
-            # For Ghosts: expected_value 
+
+            # For Ghosts: expected_value
             else:
                 # 如果到达了终端状态（赢或输）则返回此函数的值
                 return exp_value(state, depth, agentIndex)
@@ -269,7 +301,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             # 计算当前状态下的最大值
 
             # initialize maximal(alpha) to negative infinity 初始化最大值为负无穷
-            v = float('-inf')
+            v = float("-inf")
             for action in state.getLegalActions(0):
                 # 遍历所有合法动作，生成继承状态
                 # for every action, get neighbors (successors)
@@ -287,7 +319,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             actions = state.getLegalActions(agentIndex)
             # 计算每个动作的概率，这里每个动作的概率相等?
             # calculate probability of actions
-            p = 1.0 / len(actions)  
+            p = 1.0 / len(actions)
 
             for action in actions:
                 # 获取邻居信息
@@ -309,7 +341,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         # Get the best action for Pacman
         legalMoves = gameState.getLegalActions(0)
         # print(f"legal moves: {legalMoves}")
-        bestScore = float('-inf')
+        bestScore = float("-inf")
         bestAction = None
 
         # for every action
@@ -318,7 +350,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             successor = gameState.generateSuccessor(0, action)
             # expected score
             score = value(successor, 0, 1)
-            # if the expected score is bigger than the current best score, 
+            # if the expected score is bigger than the current best score,
             # update best score and action
             # 如果该动作的预期价值比当前最佳值大，更新最佳值和最佳动作
             # print(f"current score: {score}")
@@ -329,8 +361,6 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         # print(f"best score: {bestScore}")
         # print(f"best action: {bestAction}")
         return bestAction
-
-        
 
 
 def betterEvaluationFunction(currentGameState: GameState):
