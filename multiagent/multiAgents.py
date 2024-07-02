@@ -331,13 +331,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             # if the expected score is bigger than the current best score,
             # update best score and action
             # 如果该动作的预期价值比当前最佳值大，更新最佳值和最佳动作
-            # print(f"current score: {score}")
             if score > bestScore:
                 bestScore = score
                 bestAction = action
-                # print(f"new best score: {score}")
-        # print(f"best score: {bestScore}")
-        # print(f"best action: {bestAction}")
         return bestAction
 
 
@@ -358,6 +354,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         # Goal: choose an action that can maximize expected return
         # 选择一个能最大化其期望收益的动作
         def value(state, depth, agentIndex):
+            # use depth to limit the max searching depth
+            # use agentIndex to identify who is moving
             # 计算每个动作的预期价值
 
             # Terminal state or depth limit reached
@@ -409,7 +407,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 # if this is the last ghost
                 if agentIndex == state.getNumAgents() - 1:  # Last ghost
                     # 递归调用 value 函数获取继承状态的值，并乘以动作的概率 p；
-                    # 将加权值累加到 v 中
+                    # 向下一层搜索
                     # update v
                     v += p * value(successor, depth + 1, 0)
                 else:
@@ -420,7 +418,6 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         # Get the best action for Pacman
         legalMoves = gameState.getLegalActions(0)
-        # print(f"legal moves: {legalMoves}")
         bestScore = float("-inf")
         bestAction = None
 
@@ -433,13 +430,9 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             # if the expected score is bigger than the current best score,
             # update best score and action
             # 如果该动作的预期价值比当前最佳值大，更新最佳值和最佳动作
-            # print(f"current score: {score}")
             if score > bestScore:
                 bestScore = score
                 bestAction = action
-                # print(f"new best score: {score}")
-        # print(f"best score: {bestScore}")
-        # print(f"best action: {bestAction}")
         return bestAction
 
 
