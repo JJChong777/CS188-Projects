@@ -257,85 +257,76 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        # print("get to alphabetaAgent!")
-        def value(state: GameState, depth, agentIndex, alpha, beta):
-
-            # Terminal state or depth limit reached
-            if state.isWin() or state.isLose() or depth == self.depth:
-                # 若满足终止条件，即胜利、失败或达到最大深度，返回评估值
-                # If the termination condition is met, return evaluation value
-                return self.evaluationFunction(state)
-
-            # return the max value for pacman
-            if agentIndex == 0:
-                v, alpha, beta = max_value(state, depth, alpha, beta)
-                return v
-
-            # return the min value for the ghosts
-            if agentIndex > 0:
-                v, alpha, beta = min_value(state, depth, agentIndex, alpha, beta)
-                return v
-
-        # pacman's function
+        # pacman's function, calculate the max value of ghosts layer
         def max_value(state: GameState, depth, alpha, beta):
+            # if we win / lose / meet the deepest layer, return directly
+            if state.isWin() or state.isLose() or depth == self.depth:
+                return self.evaluationFunction(state)
+            
+            # initialize
             v = -float("inf")
+
+            # for all valid actions
             for action in state.getLegalActions(0):
-                if v > beta:
-                    # print("maximizer pruning")
-                    # print(f"state: {state}")
-                    # print(f"maximizer action to prune: {action}")
-                    return v, alpha, beta
                 successor = state.generateSuccessor(0, action)
-                v = max(v, value(successor, depth, 1, alpha, beta))
+
+                # calculate min value, update v
+                v = max(v, min_value(successor, depth, 1, alpha, beta))
+
+                # if true, cut it
+                if v > beta:
+                    return v 
+                
+                # else: update alpha
                 alpha = max(alpha, v)
-            # print(f"max v: {v}")
-            return v, alpha, beta
+            return v
 
         # minimizing function for ghosts
         def min_value(state: GameState, depth, agentIndex, alpha, beta):
-            v = float("inf")
-            actions = state.getLegalActions(agentIndex)
-            for action in actions:
-                if v < alpha:
-                    # breakpoint()
-                    # print("minimizer pruning")
-                    # print(f"state: {state}")
-                    # print(f"minimizer action to prune: {action}")
-                    return v, alpha, beta
-                successor = state.generateSuccessor(agentIndex, action)
-                # 检查当前代理是否是最后一个代理（最后一个鬼）
-                # if this is the last ghost
-                # increment depth by 1
-                if agentIndex == state.getNumAgents() - 1:
-                    v = min(v, value(successor, depth + 1, 0, alpha, beta))
-                    beta = min(beta, v)
-                # find the minimum v that can be obtained by this ghost
-                else:
-                    v = min(v, value(successor, depth, agentIndex + 1, alpha, beta))
-                    beta = min(beta, v)
-            # print(f"min v: {v}")
-            return v, alpha, beta
 
-        # Get the best action for Pacman
-        legalMoves = gameState.getLegalActions(0)
-        # print(f"legal moves: {legalMoves}")
+            if state.isWin() or state.isLose():
+                return self.evaluationFunction(state)
+            
+            # initialize
+            v = float("inf")
+
+            for action in state.getLegalActions(agentIndex):
+                successor = state.generateSuccessor(agentIndex, action)
+
+                # when it is the last ghost, go back to calculate pacman's value (max_value)
+                if agentIndex == state.getNumAgents() - 1:
+                    v = min(v, max_value(successor, depth + 1, alpha, beta))
+                else:
+                    # else, keep going to find min value
+                    v = min(v, min_value(successor, depth, agentIndex + 1, alpha, beta))
+
+                # when it is true, cut it
+                if v < alpha:
+                    return v  
+
+                # update beta
+                beta = min(beta, v)
+            return v
+
+        # initialize
         bestScore = float("-inf")
         bestAction = None
+        alpha = -float("inf")
+        beta = float("inf")
 
-        # for every action
-        for action in legalMoves:
-            # get neighbors state of the action
+        # for all valid actions
+        for action in gameState.getLegalActions(0):
             successor = gameState.generateSuccessor(0, action)
-            # expected score
-            score = value(successor, 0, 1, -float("inf"), float("inf"))
-            # if the expected score is bigger than the current best score,
-            # update best score and action
-            # 如果该动作的预期价值比当前最佳值大，更新最佳值和最佳动作
+            score = min_value(successor, 0, 1, alpha, beta)
+
+            # if current score is better than bestScore, update
             if score > bestScore:
                 bestScore = score
                 bestAction = action
+            
+            # update alpha
+            alpha = max(alpha, bestScore)
         return bestAction
-
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
