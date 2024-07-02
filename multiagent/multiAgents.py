@@ -452,6 +452,9 @@ def betterEvaluationFunction(currentGameState: GameState):
     ghostPositions = currentGameState.getGhostPositions()
     newPos = currentGameState.getPacmanPosition()
     walls = currentGameState.getWalls()
+    capsulePositions = currentGameState.getCapsules()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
     # print(f"ghost positions: {ghostPositions}")
     # print(f"newPos: {newPos}")
@@ -502,16 +505,28 @@ def betterEvaluationFunction(currentGameState: GameState):
 
     # find the manhattan distance from pacman's position to the nearest ghost
     ghostDistList = []
-    for ghostPos in ghostPositions:
-        ghostPos = (int(ghostPos[0]), int(ghostPos[1]))
-        ghostDist = path_length(ghostPos, newPos, walls)
+    for ghostIndex, ghostPos in enumerate(ghostPositions):
         # print(f"ghost dist: {ghostDist}")
-        if ghostDist == 0:
-            ghostDistList.append(0)
-        else:
-            ghostDistList.append(1 / path_length(ghostPos, newPos, walls))
+        if newScaredTimes[ghostIndex] == 0:
+            ghostPos = (int(ghostPos[0]), int(ghostPos[1]))
+            ghostDist = path_length(ghostPos, newPos, walls)
+            if ghostDist == 0:
+                ghostDistList.append(0)
+            else:
+                ghostDistList.append(1 / path_length(ghostPos, newPos, walls))
     sumGhostDist = sum(ghostDistList)
-    return 2 * score + (sumFoodDist) - (sumGhostDist)
+
+    capsuleDistList = []
+    for capsulePos in capsulePositions:
+        capsuleDist = path_length(capsulePos, newPos, walls)
+        # print(f"capsule dist: {capsuleDist}")
+        if capsuleDist == 0:
+            capsuleDistList.append(0)
+        else:
+            capsuleDistList.append(1 / path_length(capsulePos, newPos, walls))
+    sumCapsuleDist = sum(capsuleDistList)
+
+    return score + (sumFoodDist) - (sumGhostDist) + (sumCapsuleDist)
 
     # util.raiseNotDefined()
 
