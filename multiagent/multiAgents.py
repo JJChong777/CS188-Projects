@@ -280,10 +280,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         def max_value(state: GameState, depth, alpha, beta):
             v = -float("inf")
             for action in state.getLegalActions(0):
+                if v > beta:
+                    # print("maximizer pruning")
+                    # print(f"state: {state}")
+                    # print(f"maximizer action to prune: {action}")
+                    return v, alpha, beta
                 successor = state.generateSuccessor(0, action)
                 v = max(v, value(successor, depth, 1, alpha, beta))
-                if v >= beta:
-                    return v, alpha, beta
                 alpha = max(alpha, v)
             # print(f"max v: {v}")
             return v, alpha, beta
@@ -293,20 +296,22 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             v = float("inf")
             actions = state.getLegalActions(agentIndex)
             for action in actions:
+                if v < alpha:
+                    # breakpoint()
+                    # print("minimizer pruning")
+                    # print(f"state: {state}")
+                    # print(f"minimizer action to prune: {action}")
+                    return v, alpha, beta
                 successor = state.generateSuccessor(agentIndex, action)
                 # 检查当前代理是否是最后一个代理（最后一个鬼）
                 # if this is the last ghost
                 # increment depth by 1
                 if agentIndex == state.getNumAgents() - 1:
                     v = min(v, value(successor, depth + 1, 0, alpha, beta))
-                    if v <= alpha:
-                        return v, alpha, beta
                     beta = min(beta, v)
                 # find the minimum v that can be obtained by this ghost
                 else:
                     v = min(v, value(successor, depth, agentIndex + 1, alpha, beta))
-                    if v <= alpha:
-                        return v, alpha, beta
                     beta = min(beta, v)
             # print(f"min v: {v}")
             return v, alpha, beta
@@ -444,10 +449,78 @@ def betterEvaluationFunction(currentGameState: GameState):
     evaluation function (question 5).
 
     DESCRIPTION: <write something here so we know what you did>
+    Instead of using manhattan distance, use the distance calculated using BFS that also considers the walls
     """
     "*** YOUR CODE HERE ***"
-    print("get to betterEvaluationFunction!")
-    util.raiseNotDefined()
+    # print("get to betterEvaluationFunction!")
+    newFood = currentGameState.getFood()
+    newFoodList = newFood.asList()
+    score = currentGameState.getScore()
+    ghostPositions = currentGameState.getGhostPositions()
+    newPos = currentGameState.getPacmanPosition()
+    walls = currentGameState.getWalls()
+
+    # print(f"ghost positions: {ghostPositions}")
+    # print(f"newPos: {newPos}")
+    # print(f"newFoodList: {newFoodList}")
+
+    def path_length(start, end, walls):
+
+        rows = walls.width
+        cols = walls.height
+
+        visited = set([start])
+
+        movements = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+
+        queue = util.Queue()
+
+        queue.push((start, 0))
+
+        while not queue.isEmpty():
+            point, distance = queue.pop()
+            if point == end:
+                return distance
+            for move in movements:
+                neighbor = (point[0] + move[0], point[1] + move[1])
+                # print(f"neighbor: {neighbor}")
+                # breakpoint()
+                if (
+                    neighbor not in visited
+                    and not walls[neighbor[0]][neighbor[1]]
+                    and 0 <= neighbor[0] < rows
+                    and 0 <= neighbor[1] < cols
+                ):
+                    queue.push((neighbor, distance + 1))
+                    visited.add(neighbor)
+
+        return 9999999
+
+    foodDistList = []
+    for foodPos in newFoodList:
+        if newFood[foodPos[0]][foodPos[1]] == True:
+            foodDist = path_length(foodPos, newPos, walls)
+            # print(f"food dist: {foodDist}")
+            if foodDist == 0:
+                foodDistList.append(1)
+            else:
+                foodDistList.append(1 / path_length(foodPos, newPos, walls))
+    sumFoodDist = sum(foodDistList)
+
+    # find the manhattan distance from pacman's position to the nearest ghost
+    ghostDistList = []
+    for ghostPos in ghostPositions:
+        ghostPos = (int(ghostPos[0]), int(ghostPos[1]))
+        ghostDist = path_length(ghostPos, newPos, walls)
+        # print(f"ghost dist: {ghostDist}")
+        if ghostDist == 0:
+            ghostDistList.append(0)
+        else:
+            ghostDistList.append(1 / path_length(ghostPos, newPos, walls))
+    sumGhostDist = sum(ghostDistList)
+    return 2 * score + (sumFoodDist) - (sumGhostDist)
+
+    # util.raiseNotDefined()
 
 
 # Abbreviation
