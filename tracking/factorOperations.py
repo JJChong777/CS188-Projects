@@ -16,6 +16,9 @@ from bayesNet import Factor
 import functools
 from util import raiseNotDefined
 
+# extra import for question 2
+import itertools
+
 
 def joinFactorsByVariableWithCallTracking(callTrackingList=None):
 
@@ -129,22 +132,62 @@ def joinFactors(factors: List[Factor]):
 
     "*** YOUR CODE HERE ***"
     # joinedFactor = Factor()
+    joinUncondVar = set()
+
+    # test print to see what factors look like
     for index, factor in enumerate(factors):
-        print(f"Factor {index}")
-        print(
-            f"getAllPossibleAssignmentDicts: {factor.getAllPossibleAssignmentDicts()}"
-        )
-        print(f"getProbability: {factor.getProbability({'W': 'sun', 'D': 'wet'})}")
+        # print(f"Factor {index+1}")
+        # print(
+        #     f"getAllPossibleAssignmentDicts: {factor.getAllPossibleAssignmentDicts()}"
+        # )
+        # print(f"getProbability: {factor.getProbability({'W': 'sun', 'D': 'wet'})}")
         # print(f"setProbability: {factor.setProbability()}")
 
         # this is the conditioned variable e.g. P(X), X is the unconditioned variable
-        # I think this is also for P(X|Y), Y is the unconditioned variable
-        print(f"unconditionedVariables: {factor.unconditionedVariables()}")
+        # I think this is also for P(X|Y), X is the unconditioned variable
+        # print(f"unconditionedVariables: {factor.unconditionedVariables()}")
 
-        # this is the conditioned variable e.g. P(X|Y), X is the conditioned variable
-        print(f"conditionedVariables: {factor.conditionedVariables()}")
+        # this is the conditioned variable e.g. P(X|Y), Y is the conditioned variable
+        # print(f"conditionedVariables: {factor.conditionedVariables()}")
 
-        print(f"variableDomainsDict: {factor.variableDomainsDict()}\n")
+        # print(f"variableDomainsDict: {factor.variableDomainsDict()}\n")
+
+        # put all the unconditioned variables in a joinUncondVar set
+        for uncondtionedVar in factor.unconditionedVariables():
+            # print(f"index {index} uncondtionedVar: {uncondtionedVar}")
+            joinUncondVar.add(uncondtionedVar)
+        # print(f"joinUncondVar: {joinUncondVar}")
+
+        # check for all the remaining variables and add them to the condtioned variable dict at the last factor
+        if index == len(factors) - 1:
+            for uncondtionedVar in factor.unconditionedVariables():
+                # print(f"index {index} uncondtionedVar: {uncondtionedVar}")
+                joinUncondVar.add(uncondtionedVar)
+            allVar = list(factor.variableDomainsDict().keys())
+            joinCondVar = set(set(allVar) - joinUncondVar)
+            # print(f"joinCondVar: {joinCondVar}")
+            allDomains = [factor.variableDomainsDict()[var] for var in allVar]
+            allCombinations = list(itertools.product(*allDomains))
+            # Convert the combinations to a list of dictionaries
+            allPossibleAssignments = []
+            for combination in allCombinations:
+                assignment = {allVar[i]: combination[i] for i in range(len(allVar))}
+                allPossibleAssignments.append(assignment)
+            # print(f"allPossibleAssignments: {allPossibleAssignments}")
+            # create the new factor to start assigning probabilities to it
+            joinFactor = Factor(
+                joinUncondVar, joinCondVar, factor.variableDomainsDict()
+            )
+            for assignment in allPossibleAssignments:
+                joinProbability = 1
+                for factor in factors:
+                    joinProbability *= factor.getProbability(assignment)
+                # print(f"probability for {assignment} is {joinProbability}")
+                joinFactor.setProbability(assignment, joinProbability)
+
+            return joinFactor
+
+    # the actual code
     "*** END YOUR CODE HERE ***"
 
 
