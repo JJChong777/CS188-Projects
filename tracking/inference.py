@@ -499,6 +499,8 @@ class InferenceModule:
 
         # calculate true distance between pacman and ghost
         trueDistance = manhattanDistance(pacmanPosition, ghostPosition)
+
+        # probability calculation
         prob = busters.getObservationProbability(noisyDistance, trueDistance)
         return prob
         "*** END YOUR CODE HERE ***"
