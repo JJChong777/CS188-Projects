@@ -206,7 +206,54 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
             eliminationOrder = sorted(list(eliminationVariables))
 
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # grab all factors where we know the evidence variables (to reduce the size of the tables)
+        currentFactorsList = bayesNet.getAllCPTsWithEvidence(evidenceDict)
+        print(f"evidenceDict: {evidenceDict}")
+        print(f"currentFactorList: {currentFactorsList}")
+
+        # initialize return variables and the variables to eliminate
+        evidenceVariablesSet = set(evidenceDict.keys())
+        queryVariablesSet = set(queryVariables)
+        print(f"evidenceVariablesSet: {evidenceVariablesSet}")
+        print(f"queryVariablesSet: {queryVariablesSet}")
+        print(f"eliminationOrder: {eliminationOrder}")
+
+        for elimVar in eliminationOrder:
+            currentFactorsList, joinedFactor = joinFactorsByVariable(
+                currentFactorsList, elimVar
+            )
+            if len(joinedFactor.unconditionedVariables()) != 1:
+                joinedFactor = eliminate(joinedFactor, elimVar)
+                currentFactorsList.append(joinedFactor)
+        print(f"after elimination, {currentFactorsList}")
+        resultFactor = joinFactors(currentFactorsList)
+        print(f"resultFactor: {resultFactor}")
+        normalizedFactor = normalize(resultFactor)
+        print(f"normalizedFactor: {normalizedFactor}")
+        return normalizedFactor
+        # factors = bayesNet.getAllCPTsWithEvidence()
+        # print(f"All CPTs: {bayesNet.getAllCPTsWithEvidence()}")
+        # print(f"eliminationOrder: {eliminationOrder}")
+        # # joinFactorsByVariable
+        # for elimVar in eliminationOrder:
+        #     remainingFactors, joinedFactor = joinFactorsByVariable(factors, elimVar)
+        #     if len(joinedFactor.unconditionedVariables()) != 1:
+        #         resultFactor = eliminate(joinedFactor, elimVar)
+        #         normalize(resultFactor)
+        #         print(f"resultFactor: {resultFactor}")
+        #         remainingFactors.append(resultFactor)
+        #     factors = remainingFactors
+        #     # resultingFactors = []
+        #     # for factor in factors:
+        #     #     resultingFactors.append(normalize(factor))
+
+        #     print(f"factors after elim {elimVar}: {factors}")
+        # print(f"result factor: {joinFactors(factors)}")
+        # print(f"queryVariables: {queryVariables}")
+        # print(f"evidenceDict: {evidenceDict}")
+        # return joinFactors(factors)
+
+        # # raiseNotDefined()
         "*** END YOUR CODE HERE ***"
 
     return inferenceByVariableElimination
@@ -366,11 +413,11 @@ class DiscreteDistribution(dict):
         # raiseNotDefined()
         # calculate total value
         total_value = self.total()
-    
+
         # when there's nothing
         if total_value == 0:
             return
-        
+
         # normalize
         for key in self:
             self[key] /= total_value
@@ -401,7 +448,7 @@ class DiscreteDistribution(dict):
         # raiseNotDefined()
         # get all the keys and values
         keys = list(self.keys())
-        weights = list(self.values())   # values are weights
+        weights = list(self.values())  # values are weights
 
         return random.choices(keys, weights=weights)[0]
         "*** END YOUR CODE HERE ***"
