@@ -133,7 +133,11 @@ def joinFactors(factors: List[Factor]):
     "*** YOUR CODE HERE ***"
     # joinedFactor = Factor()
     joinUncondVar = set()
-
+    joinCondVar = set()
+    print(f"original factors obtained for join {factors}")
+    print(f"type for factors: {type(factors)}")
+    # print(f"first factor: {factors[0]}")
+    finalDictionary = factors[0].variableDomainsDict()
     # test print to see what factors look like
     for index, factor in enumerate(factors):
         # print(f"Factor {index+1}")
@@ -158,13 +162,24 @@ def joinFactors(factors: List[Factor]):
             joinUncondVar.add(uncondtionedVar)
         # print(f"joinUncondVar: {joinUncondVar}")
 
+        for condtionedVar in factor.conditionedVariables():
+            joinCondVar.add(condtionedVar)
+
+        for key in factor.variableDomainsDict().keys():
+            if key not in finalDictionary.keys():
+                finalDictionary[key] = factor.variableDomainsDict()[key]
+
+
+
         # check for all the remaining variables and add them to the condtioned variable dict at the last factor
         if index == len(factors) - 1:
-            for uncondtionedVar in factor.unconditionedVariables():
+            # for uncondtionedVar in factor.unconditionedVariables():
                 # print(f"index {index} uncondtionedVar: {uncondtionedVar}")
-                joinUncondVar.add(uncondtionedVar)
+                # joinUncondVar.add(uncondtionedVar)
+            joinCondVar = joinCondVar.difference(joinUncondVar)
             allVar = list(factor.variableDomainsDict().keys())
-            joinCondVar = set(set(allVar) - joinUncondVar)
+            # allFactorVar = list(factor.conditionedVariables().union(factor.unconditionedVariables()))
+            # joinCondVar = set(set(allFactorVar) - joinUncondVar)
             # print(f"joinCondVar: {joinCondVar}")
             allDomains = [factor.variableDomainsDict()[var] for var in allVar]
             allCombinations = list(itertools.product(*allDomains))
@@ -174,17 +189,23 @@ def joinFactors(factors: List[Factor]):
                 assignment = {allVar[i]: combination[i] for i in range(len(allVar))}
                 allPossibleAssignments.append(assignment)
             # print(f"allPossibleAssignments: {allPossibleAssignments}")
+            #
             # create the new factor to start assigning probabilities to it
+            # newDomainDict = {}
+            # for var in allFactorVar:
+                # newDomainDict[var] = factor.variableDomainsDict()[var]
             joinFactor = Factor(
-                joinUncondVar, joinCondVar, factor.variableDomainsDict()
+                joinUncondVar, joinCondVar, finalDictionary
             )
+            print(f"variableDomainsDict: {factor.variableDomainsDict()}")
+            print(f"allPossibleAssignments: {allPossibleAssignments}")
             for assignment in allPossibleAssignments:
                 joinProbability = 1
                 for factor in factors:
                     joinProbability *= factor.getProbability(assignment)
                 # print(f"probability for {assignment} is {joinProbability}")
                 joinFactor.setProbability(assignment, joinProbability)
-
+            print(f"after join operation joinFactor: {joinFactor}")
             return joinFactor
 
     # the actual code
