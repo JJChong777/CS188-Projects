@@ -231,27 +231,6 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
         normalizedFactor = normalize(resultFactor)
         print(f"normalizedFactor: {normalizedFactor}")
         return normalizedFactor
-        # factors = bayesNet.getAllCPTsWithEvidence()
-        # print(f"All CPTs: {bayesNet.getAllCPTsWithEvidence()}")
-        # print(f"eliminationOrder: {eliminationOrder}")
-        # # joinFactorsByVariable
-        # for elimVar in eliminationOrder:
-        #     remainingFactors, joinedFactor = joinFactorsByVariable(factors, elimVar)
-        #     if len(joinedFactor.unconditionedVariables()) != 1:
-        #         resultFactor = eliminate(joinedFactor, elimVar)
-        #         normalize(resultFactor)
-        #         print(f"resultFactor: {resultFactor}")
-        #         remainingFactors.append(resultFactor)
-        #     factors = remainingFactors
-        #     # resultingFactors = []
-        #     # for factor in factors:
-        #     #     resultingFactors.append(normalize(factor))
-
-        #     print(f"factors after elim {elimVar}: {factors}")
-        # print(f"result factor: {joinFactors(factors)}")
-        # print(f"queryVariables: {queryVariables}")
-        # print(f"evidenceDict: {evidenceDict}")
-        # return joinFactors(factors)
 
         # # raiseNotDefined()
         "*** END YOUR CODE HERE ***"
@@ -538,11 +517,12 @@ class InferenceModule:
         if ghostPosition == jailPosition:
             if noisyDistance is not None:
                 return 0.0
-            # else: not gonna happen
+            else: 
+                return 1.0
 
-        # no gonna happen: gost is not in the jail and noisyDistance is None
-        # if noisyDistance is None:
-        #     return 0.0
+        # gost is not in the jail and noisyDistance is None
+        if noisyDistance is None:
+            return 0.0
 
         # calculate true distance between pacman and ghost
         trueDistance = manhattanDistance(pacmanPosition, ghostPosition)
