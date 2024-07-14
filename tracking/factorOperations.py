@@ -249,7 +249,75 @@ def eliminateWithCallTracking(callTrackingList=None):
             )
 
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # make a copy of the unconditioned vars
+        remainUncondVars = set(factor.unconditionedVariables())
+
+        # elimination variable must be a unconditioned variable
+        remainUncondVars.remove(eliminationVariable)
+
+        # remaining variables of the factor
+        remainVars = list(remainUncondVars.union(factor.conditionedVariables()))
+
+        remainVarDomainDict = result_dict = {
+            var: domain
+            for var, domain in factor.variableDomainsDict().items()
+            if var in remainVars
+        }
+
+        # print(f"remainUncondVars: {remainUncondVars}")
+        # print(f"remainCondVars: {factor.conditionedVariables()}")
+        # print(f"remainVarDomainDict: {remainVarDomainDict}")
+
+        resultFactor = Factor(
+            remainUncondVars, factor.conditionedVariables(), remainVarDomainDict
+        )
+
+        resultAssignmentDicts = resultFactor.getAllPossibleAssignmentDicts()
+        # print(f"resultAssignmentDict: {resultAssignmentDicts}")
+
+        origAssignmentDicts = factor.getAllPossibleAssignmentDicts()
+
+        for resultAssign in resultAssignmentDicts:
+            # init the resulting probability sum
+            resultProbability = 0
+            for origAssign in origAssignmentDicts:
+                if all(origAssign[var] == resultAssign[var] for var in resultAssign):
+                    prob = factor.getProbability(origAssign)
+                    resultProbability += prob
+            # Output the resulting probability
+            # print(f"Resulting probability for {resultAssign}: {resultProbability}")
+            resultFactor.setProbability(resultAssign, resultProbability)
+
+        return resultFactor
+        # for assignment in resultAssignmentDicts:
+        #     key, value = next(iter())
+        # find all the combinations
+        # allCombinations = list(
+        #     itertools.product(
+        #         *[factor.variableDomainsDict()[var] for var in remainVars]
+        #     )
+        # )
+
+        # print(allCombinations)
+
+        # print(factor.variableDomainsDict())
+        # elimFactor = [
+        #     {remainVars[i]: combination[i] for i in range(len(remainVars))}
+        #     for combination in allCombinations
+        # ]
+        # print(result)
+
+        # resultFactor = Factor(
+        #     remainUncondVars,
+        #     factor.conditionedVariables(),
+        # )
+
+        # return
+        # Use a set to collect unique combinations of W and D
+
+        # for assignment in factor.getAllPossibleAssignmentDicts():
+
+        # raiseNotDefined()
         "*** END YOUR CODE HERE ***"
 
     return eliminate
