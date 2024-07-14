@@ -222,8 +222,8 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
             currentFactorsList, joinedFactor = joinFactorsByVariable(
                 currentFactorsList, elimVar
             )
-            joinedFactor = eliminate(joinedFactor, elimVar)
             if len(joinedFactor.unconditionedVariables()) != 1:
+                joinedFactor = eliminate(joinedFactor, elimVar)
                 currentFactorsList.append(joinedFactor)
         print(f"after elimination, {currentFactorsList}")
         resultFactor = joinFactors(currentFactorsList)
@@ -413,11 +413,11 @@ class DiscreteDistribution(dict):
         # raiseNotDefined()
         # calculate total value
         total_value = self.total()
-    
+
         # when there's nothing
         if total_value == 0:
             return
-        
+
         # normalize
         for key in self:
             self[key] /= total_value
@@ -448,7 +448,7 @@ class DiscreteDistribution(dict):
         # raiseNotDefined()
         # get all the keys and values
         keys = list(self.keys())
-        weights = list(self.values())   # values are weights
+        weights = list(self.values())  # values are weights
 
         return random.choices(keys, weights=weights)[0]
         "*** END YOUR CODE HERE ***"
