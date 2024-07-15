@@ -222,14 +222,14 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
             # print(f"elimVar {elimVar}")
             currentFactorsList, joinedFactor = joinFactorsByVariable(
                 currentFactorsList, elimVar
-            ) # 导致了错误的P
+            )  # 导致了错误的P
             # print(f"joinedFactor: {joinedFactor}")
             # print(f"remainingFactorsList: {currentFactorsList}")
             if len(joinedFactor.unconditionedVariables()) != 1:
                 joinedFactor = eliminate(joinedFactor, elimVar)
                 currentFactorsList.append(joinedFactor)
         # print(f"after elimination, {currentFactorsList}")
-        resultFactor = joinFactors(currentFactorsList) # 导致了T的回归
+        resultFactor = joinFactors(currentFactorsList)  # 导致了T的回归
         # print(f"resultFactor: {resultFactor}")
         # return resultFactor
         normalizedFactor = normalize(resultFactor)
@@ -521,10 +521,10 @@ class InferenceModule:
         if ghostPosition == jailPosition:
             if noisyDistance is not None:
                 return 0.0
-            else: 
+            else:
                 return 1.0
 
-        # gost is not in the jail and noisyDistance is None
+        # ghost is not in the jail and noisyDistance is None
         if noisyDistance is None:
             return 0.0
 
@@ -649,7 +649,17 @@ class ExactInference(InferenceModule):
         position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        pacPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        # print(f"selfAllPositions: {self.allPositions}")
+        # print(f"selfBeliefs: {self.beliefs}")
+        # print(f"observation: {observation}")
+
+        for possibleGhostPos in self.allPositions:
+            possibleGhostPosProb = self.getObservationProb(
+                observation, pacPos, possibleGhostPos, jailPos
+            )
+            self.beliefs[possibleGhostPos] *= possibleGhostPosProb
         "*** END YOUR CODE HERE ***"
         self.beliefs.normalize()
 
