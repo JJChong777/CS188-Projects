@@ -167,27 +167,47 @@ class GreedyBustersAgent(BustersAgent):
         not yet been captured, then chooses an action that brings
         Pacman closest to the closest ghost (according to mazeDistance!).
         """
+        # get pacman's position
         pacmanPosition = gameState.getPacmanPosition()
+        # get pacman's actions
         legal = [a for a in gameState.getLegalPacmanActions()]
+        # get position info about all current ghosts
         livingGhosts = gameState.getLivingGhosts()
+        # get distribution of all uncatched ghosts
         livingGhostPositionDistributions = [
             beliefs
             for i, beliefs in enumerate(self.ghostBeliefs)
             if livingGhosts[i + 1]
         ]
         "*** YOUR CODE HERE ***"
-        # possible actions pacman can take
-        # Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST
-        for ghostIndex in range(1, len(livingGhosts)):
-            print(f"Ghost {ghostIndex} alive: {livingGhosts[ghostIndex]}")
-            # print(
-            #     f"livingGhostPositionDistribution for Ghost {ghostIndex}: {livingGhostPositionDistributions[ghostIndex-1]}"
-            # )
-            # print(f"ghostAgents: {self.ghostAgents}")
-            inferenceModule = inference.ExactInference
-            # inference.ExactInference(gameState.g)
-            # print(f"ghostAgent = {gameState.getGhostState(ghostIndex)}")
+       # for every ghost that are not catched, get their most likely position
+        mostLikelyPositions = []
+        # for each distribution (probability for every position of the ghost)
+        for distribution in livingGhostPositionDistributions:
+            # get the position with highest probability from distribution
+            # argMax() function can return the value with biggest probability
+            mostLikelyPosition = distribution.argMax()
+            # store the results 
+            mostLikelyPositions.append(mostLikelyPosition)
 
-        # inference.ExactInference()
-        # raiseNotDefined()
+        # calculate the closest distance between ghost and pacman, caused by each
+        # action
+        bestAction = None
+        minDistance = float('inf')
+        
+        for action in legal:
+            # get neighbor postions
+            successorPosition = Actions.getSuccessor(pacmanPosition, action)
+            # for all possible positions
+            for ghostPosition in mostLikelyPositions:
+                # calculate the distance
+                distance = self.distancer.getDistance(successorPosition, ghostPosition)
+                
+                if distance < minDistance:
+                    # update
+                    minDistance = distance
+                    bestAction = action
+        # return the bestAction which allow the pacman to get closer to the ghost to
+        # catch it
+        return bestAction
         "*** END YOUR CODE HERE ***"
