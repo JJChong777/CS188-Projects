@@ -208,7 +208,6 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
         "*** YOUR CODE HERE ***"
         # grab all factors where we know the evidence variables (to reduce the size of the tables)
         currentFactorsList = bayesNet.getAllCPTsWithEvidence(evidenceDict)
-        print(f"currentFactorsList: {currentFactorsList}")
 
         # initialize return variables and the variables to eliminate
         # evidenceVariablesSet = set(evidenceDict.keys())
@@ -217,11 +216,11 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
         for elimVar in eliminationOrder:
             currentFactorsList, joinedFactor = joinFactorsByVariable(
                 currentFactorsList, elimVar
-            ) # 导致了错误的P
+            )  # 导致了错误的P
             if len(joinedFactor.unconditionedVariables()) != 1:
                 joinedFactor = eliminate(joinedFactor, elimVar)
                 currentFactorsList.append(joinedFactor)
-        resultFactor = joinFactors(currentFactorsList) # 导致了T的回归
+        resultFactor = joinFactors(currentFactorsList)  # 导致了T的回归
         # return resultFactor
         normalizedFactor = normalize(resultFactor)
         # print(f"normalizedFactor: {normalizedFactor}")
