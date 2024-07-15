@@ -692,7 +692,6 @@ class ExactInference(InferenceModule):
                 newBeliefs[newPos] += oldBelief * prob
 
         self.beliefs = newBeliefs
-        self.beliefs.normalize()
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
