@@ -208,29 +208,20 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
         "*** YOUR CODE HERE ***"
         # grab all factors where we know the evidence variables (to reduce the size of the tables)
         currentFactorsList = bayesNet.getAllCPTsWithEvidence(evidenceDict)
-        # print(f"evidenceDict: {evidenceDict}")
-        # print(f"currentFactorList initial: {currentFactorsList}")
+        print(f"currentFactorsList: {currentFactorsList}")
 
         # initialize return variables and the variables to eliminate
-        evidenceVariablesSet = set(evidenceDict.keys())
-        queryVariablesSet = set(queryVariables)
-        # print(f"evidenceVariablesSet: {evidenceVariablesSet}")
-        # print(f"queryVariablesSet (should be on the left): {queryVariablesSet}")
-        # print(f"eliminationOrder (need to elimination): {eliminationOrder}")
+        # evidenceVariablesSet = set(evidenceDict.keys())
+        # queryVariablesSet = set(queryVariables)
 
         for elimVar in eliminationOrder:
-            # print(f"elimVar {elimVar}")
             currentFactorsList, joinedFactor = joinFactorsByVariable(
                 currentFactorsList, elimVar
             ) # 导致了错误的P
-            # print(f"joinedFactor: {joinedFactor}")
-            # print(f"remainingFactorsList: {currentFactorsList}")
             if len(joinedFactor.unconditionedVariables()) != 1:
                 joinedFactor = eliminate(joinedFactor, elimVar)
                 currentFactorsList.append(joinedFactor)
-        # print(f"after elimination, {currentFactorsList}")
         resultFactor = joinFactors(currentFactorsList) # 导致了T的回归
-        # print(f"resultFactor: {resultFactor}")
         # return resultFactor
         normalizedFactor = normalize(resultFactor)
         # print(f"normalizedFactor: {normalizedFactor}")

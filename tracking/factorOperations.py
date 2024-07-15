@@ -131,79 +131,35 @@ def joinFactors(factors: List[Factor]):
             )
 
     "*** YOUR CODE HERE ***"
-    # joinedFactor = Factor()
-
-    # init a set for all the uncondtioned variables in the joined factor
     joinUncondVar = set()
-
-    # init a set for all the conditioned variables in the joined factor
     joinCondVar = set()
+    variableDomainsDict = {}
 
-    # get the domains for all the variables from the first factor
-    # currently not working because factors is a dict_values type and not a list
-    finalDictionary = factors[0].variableDomainsDict()
+    # Iterate over all factors
+    for factor in factors:
+        # use update method to ensure all variables from the factor are in the 
+        # variableDomainsDict => combine all the variables together
+        joinUncondVar.update(factor.unconditionedVariables())
+        joinCondVar.update(factor.conditionedVariables())
+        variableDomainsDict.update(factor.variableDomainsDict())
 
-    # loop through all the factors
-    for index, factor in enumerate(factors):
+    # delete all the variables appear in the joinUncondVar from joinCondVar
+    joinCondVar -= joinUncondVar
 
-        # if there is a unconditioned variable in the factor, add it to the joinUncondVar set
-        for uncondtionedVar in factor.unconditionedVariables():
-            joinUncondVar.add(uncondtionedVar)
+    # use joinFactor to record factors after joining
+    joinFactor = Factor(joinUncondVar, joinCondVar, variableDomainsDict)
 
-        # if there is a conditioned variable in the factor, add it to the joinCondVar set
-        for condtionedVar in factor.conditionedVariables():
-            joinCondVar.add(condtionedVar)
+    # get all possible assignment combinations, for each of them:
+    for assignment in joinFactor.getAllPossibleAssignmentDicts():
+        # initialize joint probability as 1, subsequent probabilities will be
+        # accumulated through multiplication.
+        prob = 1
+        for factor in factors:
+            # get assignment value and multiply it cumulatively with prob
+            prob *= factor.getProbability(assignment)
+        joinFactor.setProbability(assignment, prob)
 
-        # if there is a key in the dictionary that wasn't discovered before (which means a variable), add it to the dictionary for the final joined factor
-        for key in factor.variableDomainsDict().keys():
-            if key not in finalDictionary.keys():
-                finalDictionary[key] = factor.variableDomainsDict()[key]
-
-        # start doing the joining when we have reached the last factor
-        if index == len(factors) - 1:
-
-            # filter out condtioned variabels which are already in the unconditioned variables
-            joinCondVar = joinCondVar.difference(joinUncondVar)
-
-            # get all the variables/keys from the last factor's variableDomainsDict
-            allVar = list(factor.variableDomainsDict().keys())
-
-            # put all the domains of the variables in a list (ChatGPT)
-            allDomains = [factor.variableDomainsDict()[var] for var in allVar]
-
-            # create all possible combinations from the values that each variable can take on (ChatGPT)
-            allCombinations = list(itertools.product(*allDomains))
-
-            # init a empty list for all the possible assignments to variables
-            allPossibleAssignments = []
-
-            # for loop through all the combinations
-            for combination in allCombinations:
-
-                # create a assignment for each variable (chatGPT)
-                assignment = {allVar[i]: combination[i] for i in range(len(allVar))}
-
-                # add this assignment into the list
-                allPossibleAssignments.append(assignment)
-
-            # create a new factor with the joined unconditioned variables, condtioned variables and the final dictionary that we made from earlier
-            joinFactor = Factor(joinUncondVar, joinCondVar, finalDictionary)
-
-            # calculate the probability for all possible assignments to the variable
-            for assignment in allPossibleAssignments:
-                # init the probability to one
-                joinProbability = 1
-                # loop through all the factors
-                for factor in factors:
-                    # multiply the joinProbability with the probability of the assignment for all factor
-                    joinProbability *= factor.getProbability(assignment)
-                # set the probability of the assignment equal to the probability calculated
-                joinFactor.setProbability(assignment, joinProbability)
-            # print(f"after join operation joinFactor: {joinFactor}")
-            # return the factor obtained
-            return joinFactor
-
-    # the actual code
+    return joinFactor
     "*** END YOUR CODE HERE ***"
 
 
