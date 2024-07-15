@@ -132,80 +132,75 @@ def joinFactors(factors: List[Factor]):
 
     "*** YOUR CODE HERE ***"
     # joinedFactor = Factor()
+
+    # init a set for all the uncondtioned variables in the joined factor
     joinUncondVar = set()
+
+    # init a set for all the conditioned variables in the joined factor
     joinCondVar = set()
-    print(f"original factors obtained for join {factors}")
-    print(f"type for factors: {type(factors)}")
-    # print(f"first factor: {factors[0]}")
+
+    # get the domains for all the variables from the first factor
+    # currently not working because factors is a dict_values type and not a list
     finalDictionary = factors[0].variableDomainsDict()
-    # test print to see what factors look like
+
+    # loop through all the factors
     for index, factor in enumerate(factors):
-        # print(f"Factor {index+1}")
-        # print(
-        #     f"getAllPossibleAssignmentDicts: {factor.getAllPossibleAssignmentDicts()}"
-        # )
-        # print(f"getProbability: {factor.getProbability({'W': 'sun', 'D': 'wet'})}")
-        # print(f"setProbability: {factor.setProbability()}")
 
-        # this is the conditioned variable e.g. P(X), X is the unconditioned variable
-        # I think this is also for P(X|Y), X is the unconditioned variable
-        # print(f"unconditionedVariables: {factor.unconditionedVariables()}")
-
-        # this is the conditioned variable e.g. P(X|Y), Y is the conditioned variable
-        # print(f"conditionedVariables: {factor.conditionedVariables()}")
-
-        # print(f"variableDomainsDict: {factor.variableDomainsDict()}\n")
-
-        # put all the unconditioned variables in a joinUncondVar set
+        # if there is a unconditioned variable in the factor, add it to the joinUncondVar set
         for uncondtionedVar in factor.unconditionedVariables():
-            # print(f"index {index} uncondtionedVar: {uncondtionedVar}")
             joinUncondVar.add(uncondtionedVar)
-        # print(f"joinUncondVar: {joinUncondVar}")
 
+        # if there is a conditioned variable in the factor, add it to the joinCondVar set
         for condtionedVar in factor.conditionedVariables():
             joinCondVar.add(condtionedVar)
 
+        # if there is a key in the dictionary that wasn't discovered before (which means a variable), add it to the dictionary for the final joined factor
         for key in factor.variableDomainsDict().keys():
             if key not in finalDictionary.keys():
                 finalDictionary[key] = factor.variableDomainsDict()[key]
 
-
-
-        # check for all the remaining variables and add them to the condtioned variable dict at the last factor
+        # start doing the joining when we have reached the last factor
         if index == len(factors) - 1:
-            # for uncondtionedVar in factor.unconditionedVariables():
-                # print(f"index {index} uncondtionedVar: {uncondtionedVar}")
-                # joinUncondVar.add(uncondtionedVar)
+
+            # filter out condtioned variabels which are already in the unconditioned variables
             joinCondVar = joinCondVar.difference(joinUncondVar)
+
+            # get all the variables/keys from the last factor's variableDomainsDict
             allVar = list(factor.variableDomainsDict().keys())
-            # allFactorVar = list(factor.conditionedVariables().union(factor.unconditionedVariables()))
-            # joinCondVar = set(set(allFactorVar) - joinUncondVar)
-            # print(f"joinCondVar: {joinCondVar}")
+
+            # put all the domains of the variables in a list (ChatGPT)
             allDomains = [factor.variableDomainsDict()[var] for var in allVar]
+
+            # create all possible combinations from the values that each variable can take on (ChatGPT)
             allCombinations = list(itertools.product(*allDomains))
-            # Convert the combinations to a list of dictionaries
+
+            # init a empty list for all the possible assignments to variables
             allPossibleAssignments = []
+
+            # for loop through all the combinations
             for combination in allCombinations:
+
+                # create a assignment for each variable (chatGPT)
                 assignment = {allVar[i]: combination[i] for i in range(len(allVar))}
+
+                # add this assignment into the list
                 allPossibleAssignments.append(assignment)
-            # print(f"allPossibleAssignments: {allPossibleAssignments}")
-            #
-            # create the new factor to start assigning probabilities to it
-            # newDomainDict = {}
-            # for var in allFactorVar:
-                # newDomainDict[var] = factor.variableDomainsDict()[var]
-            joinFactor = Factor(
-                joinUncondVar, joinCondVar, finalDictionary
-            )
-            print(f"variableDomainsDict: {factor.variableDomainsDict()}")
-            print(f"allPossibleAssignments: {allPossibleAssignments}")
+
+            # create a new factor with the joined unconditioned variables, condtioned variables and the final dictionary that we made from earlier
+            joinFactor = Factor(joinUncondVar, joinCondVar, finalDictionary)
+
+            # calculate the probability for all possible assignments to the variable
             for assignment in allPossibleAssignments:
+                # init the probability to one
                 joinProbability = 1
+                # loop through all the factors
                 for factor in factors:
+                    # multiply the joinProbability with the probability of the assignment for all factor
                     joinProbability *= factor.getProbability(assignment)
-                # print(f"probability for {assignment} is {joinProbability}")
+                # set the probability of the assignment equal to the probability calculated
                 joinFactor.setProbability(assignment, joinProbability)
-            print(f"after join operation joinFactor: {joinFactor}")
+            # print(f"after join operation joinFactor: {joinFactor}")
+            # return the factor obtained
             return joinFactor
 
     # the actual code
