@@ -512,10 +512,10 @@ class InferenceModule:
         if ghostPosition == jailPosition:
             if noisyDistance is not None:
                 return 0.0
-            else: 
+            else:
                 return 1.0
 
-        # gost is not in the jail and noisyDistance is None
+        # ghost is not in the jail and noisyDistance is None
         if noisyDistance is None:
             return 0.0
 
@@ -640,7 +640,16 @@ class ExactInference(InferenceModule):
         position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        pacPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+
+        for possibleGhostPos in self.allPositions:
+            # use the function to calculate the probability the ghost is in that position
+            possibleGhostPosProb = self.getObservationProb(
+                observation, pacPos, possibleGhostPos, jailPos
+            )
+            # multiply the probability that the ghost could be in that position with the sensor reading probability that the ghost is in that position
+            self.beliefs[possibleGhostPos] *= possibleGhostPosProb
         "*** END YOUR CODE HERE ***"
         self.beliefs.normalize()
 
@@ -658,7 +667,22 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # initialize a new belief distribution for all the possible positions the ghost can be on the map
+        newBeliefs = DiscreteDistribution()
+
+        # for all the position the ghost could have been in the past
+        for oldPos in self.allPositions:
+            # get the probability distribution that the ghost transitioned to the new postion from the old position
+            newPosDist = self.getPositionDistribution(gameState, oldPos)
+            # get the probability that the ghost was in the old position in the first place
+            oldBelief = self.beliefs[oldPos]
+
+            # for all the possible postions the ghost could have transition to and their probability
+            for newPos, prob in newPosDist.items():
+                # calculate the probability that the ghost transitioned to the new position from the old position and add them all cumulatively
+                newBeliefs[newPos] += oldBelief * prob
+
+        self.beliefs = newBeliefs
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
