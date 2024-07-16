@@ -762,8 +762,6 @@ class ParticleFilter(InferenceModule):
         beliefs = self.getBeliefDistribution()
         # print(f"sample: {beliefs.sample()}")
 
-        # when all particles receive zero weight,the list of particles should be reinitialized
-
         for possibleGhostPos in self.legalPositions:
             # use the function to calculate the probability the ghost is in that position
             possibleGhostPosProb = self.getObservationProb(
@@ -772,19 +770,19 @@ class ParticleFilter(InferenceModule):
             # multiply the probability that the ghost could be in that position with the sensor reading probability that the ghost is in that position
             beliefs[possibleGhostPos] *= possibleGhostPosProb
 
-            # after updating beliefs, make sure that the total weights in the beliefs are not zero
-            if beliefs.total() == 0:
-                self.initializeUniformly(gameState)
-                # make sure to early return to prevent it from doing the resampling
-                return
+        # when all particles receive zero weight,the list of particles should be reinitialized
+        # after updating beliefs, make sure that the total weights in the beliefs are not zero
+        if beliefs.total() == 0:
+            self.initializeUniformly(gameState)
+            # make sure to early return to prevent it from doing the resampling
+            return
 
-            # set particles back to empty list
-            self.particles = []
+        # set particles back to empty list
+        self.particles = []
 
-            # resample the particles
-            for i in range(self.numParticles):
-                self.particles.append(beliefs.sample())
-
+        # resample the particles
+        for i in range(self.numParticles):
+            self.particles.append(beliefs.sample())
         "*** END YOUR CODE HERE ***"
 
     ########### ########### ###########
@@ -801,7 +799,7 @@ class ParticleFilter(InferenceModule):
         newParticles = []
         # for all the particles
         for particle in self.particles:
-            # get the new position fdistribution given the old position (the previous particle)
+            # get the new position distribution given the old position (the previous particle)
             newPosDist = self.getPositionDistribution(gameState, particle)
             # add it to the new particles list
             newParticles.append(newPosDist.sample())
