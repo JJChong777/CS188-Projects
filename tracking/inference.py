@@ -797,9 +797,14 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** YOUR CODE HERE ***"
+        # init a new list of particles
         newParticles = []
+        # for all the particles
         for particle in self.particles:
+            # get the new position fdistribution given the old position (the previous particle)
             newPosDist = self.getPositionDistribution(gameState, particle)
+            # add it to the new particles list
             newParticles.append(newPosDist.sample())
+        # set the particles to be the new particle list
         self.particles = newParticles
         "*** END YOUR CODE HERE ***"
