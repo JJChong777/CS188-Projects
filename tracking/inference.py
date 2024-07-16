@@ -757,7 +757,34 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        pacPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        beliefs = self.getBeliefDistribution()
+        # print(f"sample: {beliefs.sample()}")
+
+        # when all particles receive zero weight,the list of particles should be reinitialized
+
+        for possibleGhostPos in self.legalPositions:
+            # use the function to calculate the probability the ghost is in that position
+            possibleGhostPosProb = self.getObservationProb(
+                observation, pacPos, possibleGhostPos, jailPos
+            )
+            # multiply the probability that the ghost could be in that position with the sensor reading probability that the ghost is in that position
+            beliefs[possibleGhostPos] *= possibleGhostPosProb
+
+            # after updating beliefs, make sure that the total weights in the beliefs are not zero
+            if beliefs.total() == 0:
+                self.initializeUniformly(gameState)
+                # make sure to early return to prevent it from doing the resampling
+                return
+
+            # set particles back to empty list
+            self.particles = []
+
+            # resample the particles
+            for i in range(self.numParticles):
+                self.particles.append(beliefs.sample())
+
         "*** END YOUR CODE HERE ***"
 
     ########### ########### ###########
@@ -770,5 +797,6 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        newParticles = []
+
         "*** END YOUR CODE HERE ***"
