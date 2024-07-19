@@ -18,7 +18,6 @@ from featureExtractors import *
 from backend import ReplayMemory
 
 import nn
-import model
 import backend
 import gridworld
 
