@@ -19,59 +19,82 @@
 # Set the given parameters to obtain the specified policies through
 # value iteration.
 
+
+# key concepts:
+
+# answerDiscount causes the agent to prefer different kind of rewards
+# low discount means it prefers shorter term rewards, higher discount means it prefers longer term rewards
+# more steps agent takes -> more heavily discounted rewards -> agent is pushed to take shorter term rewards
+
+# answerNoise causes the agent to prefer different risk levels of paths
+# low noise means it can trust its moves, so it will take the riskier path
+# higher noise means that the agent cannot trust its moves, making it take the less risky path
+
+
+# answerLivingReward (reward per step) causes the agent to favor exploring vs favoring the shorter path
+# positive living reward -> rewarded for exploring (transitioning from one state to another) -> explore more
+# negative living reward -> penalized for exploring -> agent motivated to reach terminal state faster
+
+
 def question2a():
     """
-      Prefer the close exit (+1), risking the cliff (-10).
+    Prefer the close exit (+1), risking the cliff (-10).
     """
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    answerDiscount = 0.2
+    answerNoise = 0
+    answerLivingReward = -1
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
+
 
 def question2b():
     """
-      Prefer the close exit (+1), but avoiding the cliff (-10).
+    Prefer the close exit (+1), but avoiding the cliff (-10).
     """
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    answerDiscount = 0.4
+    answerNoise = 0.3
+    answerLivingReward = -0.1
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
+
 
 def question2c():
     """
-      Prefer the distant exit (+10), risking the cliff (-10).
+    Prefer the distant exit (+10), risking the cliff (-10).
     """
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    answerDiscount = 0.8
+    answerNoise = 0
+    answerLivingReward = 0
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
+
 
 def question2d():
     """
-      Prefer the distant exit (+10), avoiding the cliff (-10).
+    Prefer the distant exit (+10), avoiding the cliff (-10).
     """
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    answerDiscount = 0.8
+    answerNoise = 0.5
+    answerLivingReward = 0.1
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
+
 
 def question2e():
     """
-      Avoid both exits and the cliff (so an episode should never terminate).
+    Avoid both exits and the cliff (so an episode should never terminate).
     """
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    answerDiscount = 0
+    answerNoise = 0
+    answerLivingReward = 100
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-if __name__ == '__main__':
-    print('Answers to analysis questions:')
+
+if __name__ == "__main__":
+    print("Answers to analysis questions:")
     import analysis
-    for q in [q for q in dir(analysis) if q.startswith('question')]:
+
+    for q in [q for q in dir(analysis) if q.startswith("question")]:
         response = getattr(analysis, q)()
-        print('  Question %s:\t%s' % (q, str(response)))
+        print("  Question %s:\t%s" % (q, str(response)))
