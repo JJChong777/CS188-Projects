@@ -24,20 +24,23 @@ class PerceptronModel(Module):
         For example, dimensions=2 would mean that the perceptron must classify
         2D points.
 
-        In order for our autograder to detect your weight, initialize it as a 
+        In order for our autograder to detect your weight, initialize it as a
         pytorch Parameter object as follows:
 
         Parameter(weight_vector)
 
         where weight_vector is a pytorch Tensor of dimension 'dimensions'
 
-        
+
         Hint: You can use ones(dim) to create a tensor of dimension dim.
         """
         super(PerceptronModel, self).__init__()
-        
+
         "*** YOUR CODE HERE ***"
-        self.w = None #Initialize your weights here
+        # create a tensor of ones with the given dimensions (1 x dimensions)
+        weight_vector = ones(1, dimensions)
+        # init weights as a pytorch parameter
+        self.w = Parameter(weight_vector)  # Initialize your weights here
 
     def get_weights(self):
         """
@@ -56,7 +59,7 @@ class PerceptronModel(Module):
         The pytorch function `tensordot` may be helpful here.
         """
         "*** YOUR CODE HERE ***"
-
+        return tensordot(self.w, x)
 
     def get_prediction(self, x):
         """
@@ -65,22 +68,34 @@ class PerceptronModel(Module):
         Returns: 1 or -1
         """
         "*** YOUR CODE HERE ***"
-
-
+        dot_product = self.run(x)
+        # see lecture 18 slide 12 (Classify with current weights)
+        if dot_product >= 0:
+            return 1
+        else:
+            return -1
 
     def train(self, dataset):
         """
         Train the perceptron until convergence.
-        You can iterate through DataLoader in order to 
+        You can iterate through DataLoader in order to
         retrieve all the batches you need to train on.
 
         Each sample in the dataloader is in the form {'x': features, 'label': label} where label
         is the item we need to predict based off of its features.
-        """        
+        """
         with no_grad():
             dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
             "*** YOUR CODE HERE ***"
-
+            converge = False
+            while not converge:
+                converge = True
+                for sample in dataloader:
+                    prediction = self.get_prediction(sample["x"])
+                    # compare the prediction to the label
+                    if prediction != sample["label"]:
+                        converge = False
+                        self.w += sample["label"] * sample["x"]
 
 
 class RegressionModel(Module):
@@ -89,12 +104,11 @@ class RegressionModel(Module):
     numbers to real numbers. The network should be sufficiently large to be able
     to approximate sin(x) on the interval [-2pi, 2pi] to reasonable precision.
     """
+
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
         super().__init__()
-
-
 
     def forward(self, x):
         """
@@ -107,7 +121,6 @@ class RegressionModel(Module):
         """
         "*** YOUR CODE HERE ***"
 
-    
     def get_loss(self, x, y):
         """
         Computes the loss for a batch of examples.
@@ -119,14 +132,12 @@ class RegressionModel(Module):
         Returns: a tensor of size 1 containing the loss
         """
         "*** YOUR CODE HERE ***"
- 
-  
 
     def train(self, dataset):
         """
         Trains the model.
 
-        In order to create batches, create a DataLoader object and pass in `dataset` as well as your required 
+        In order to create batches, create a DataLoader object and pass in `dataset` as well as your required
         batch size. You can look at PerceptronModel as a guideline for how you should implement the DataLoader
 
         Each sample in the dataloader object will be in the form {'x': features, 'label': label} where label
@@ -134,17 +145,9 @@ class RegressionModel(Module):
 
         Inputs:
             dataset: a PyTorch dataset object containing data to be trained on
-            
+
         """
         "*** YOUR CODE HERE ***"
-
-
-            
-
-
-
-
-
 
 
 class DigitClassificationModel(Module):
@@ -161,14 +164,13 @@ class DigitClassificationModel(Module):
     methods here. We recommend that you implement the RegressionModel before
     working on this part of the project.)
     """
+
     def __init__(self):
         # Initialize your model parameters here
         super().__init__()
         input_size = 28 * 28
         output_size = 10
         "*** YOUR CODE HERE ***"
-
-
 
     def run(self, x):
         """
@@ -186,7 +188,6 @@ class DigitClassificationModel(Module):
         """
         """ YOUR CODE HERE """
 
-
     def get_loss(self, x, y):
         """
         Computes the loss for a batch of examples.
@@ -202,14 +203,11 @@ class DigitClassificationModel(Module):
         """
         """ YOUR CODE HERE """
 
-        
-
     def train(self, dataset):
         """
         Trains the model.
         """
         """ YOUR CODE HERE """
-
 
 
 class LanguageIDModel(Module):
@@ -220,6 +218,7 @@ class LanguageIDModel(Module):
     methods here. We recommend that you implement the RegressionModel before
     working on this part of the project.)
     """
+
     def __init__(self):
         # Our dataset contains words from five different languages, and the
         # combined alphabets of the five languages contain a total of 47 unique
@@ -230,7 +229,6 @@ class LanguageIDModel(Module):
         super(LanguageIDModel, self).__init__()
         "*** YOUR CODE HERE ***"
         # Initialize your model parameters here
-
 
     def run(self, xs):
         """
@@ -263,7 +261,6 @@ class LanguageIDModel(Module):
         """
         "*** YOUR CODE HERE ***"
 
-    
     def get_loss(self, xs, y):
         """
         Computes the loss for a batch of examples.
@@ -280,7 +277,6 @@ class LanguageIDModel(Module):
         """
         "*** YOUR CODE HERE ***"
 
-
     def train(self, dataset):
         """
         Trains the model.
@@ -288,7 +284,7 @@ class LanguageIDModel(Module):
         Note that when you iterate through dataloader, each batch will returned as its own vector in the form
         (batch_size x length of word x self.num_chars). However, in order to run multiple samples at the same time,
         get_loss() and run() expect each batch to be in the form (length of word x batch_size x self.num_chars), meaning
-        that you need to switch the first two dimensions of every batch. This can be done with the movedim() function 
+        that you need to switch the first two dimensions of every batch. This can be done with the movedim() function
         as follows:
 
         movedim(input_vector, initial_dimension_position, final_dimension_position)
@@ -297,7 +293,6 @@ class LanguageIDModel(Module):
         """
         "*** YOUR CODE HERE ***"
 
-        
 
 def Convolve(input: tensor, weight: tensor):
     """
@@ -317,10 +312,8 @@ def Convolve(input: tensor, weight: tensor):
     Output_Tensor = tensor(())
     "*** YOUR CODE HERE ***"
 
-    
     "*** End Code ***"
     return Output_Tensor
-
 
 
 class DigitConvolutionalModel(Module):
@@ -333,7 +326,6 @@ class DigitConvolutionalModel(Module):
 
 
     """
-    
 
     def __init__(self):
         # Initialize your model parameters here
@@ -343,18 +335,17 @@ class DigitConvolutionalModel(Module):
         self.convolution_weights = Parameter(ones((3, 3)))
         """ YOUR CODE HERE """
 
-
     def run(self, x):
         """
         The convolutional layer is already applied, and the output is flattened for you. You should treat x as
         a regular 1-dimentional datapoint now, similar to the previous questions.
         """
         x = x.reshape(len(x), 28, 28)
-        x = stack(list(map(lambda sample: Convolve(sample, self.convolution_weights), x)))
+        x = stack(
+            list(map(lambda sample: Convolve(sample, self.convolution_weights), x))
+        )
         x = x.flatten(start_dim=1)
         """ YOUR CODE HERE """
-
- 
 
     def get_loss(self, x, y):
         """
@@ -371,11 +362,8 @@ class DigitConvolutionalModel(Module):
         """
         """ YOUR CODE HERE """
 
-        
-
     def train(self, dataset):
         """
         Trains the model.
         """
         """ YOUR CODE HERE """
- 
