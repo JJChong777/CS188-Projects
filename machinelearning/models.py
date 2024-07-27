@@ -33,6 +33,17 @@ class PerceptronModel(Module):
 
 
         Hint: You can use ones(dim) to create a tensor of dimension dim.
+
+        感知机用于将数据点分类为属于某个特定类别(+1)或不属于该类别(-1)。`dimensions` 参数表示数据的维度。例如，如果 `dimensions=2`，则表示感知机需要对二维点进行分类。  
+
+        为了让我们的自动评分系统能够检测到你的权重，你需要将其初始化为一个 PyTorch 的 Parameter 对象，如下所示：  
+
+        Parameter(weight_vector)  
+
+        其中 `weight_vector` 是一个维度为 `dimensions` 的 PyTorch 张量(Tensor)。  
+
+        提示：你可以使用 `ones(dim)` 来创建一个维度为 `dim` 的全1张量。  
+
         """
         super(PerceptronModel, self).__init__()
 
@@ -103,12 +114,19 @@ class RegressionModel(Module):
     A neural network model for approximating a function that maps from real
     numbers to real numbers. The network should be sufficiently large to be able
     to approximate sin(x) on the interval [-2pi, 2pi] to reasonable precision.
+    一个神经网络模型，用于近似一个从实数映射到实数的函数。该网络应该足够大，以便能够在区间
+    [-2π, 2π]上以合理的精度近似sin(x)函数。
     """
 
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
-        super().__init__()
+        # super().__init__()
+        super(RegressionModel, self).__init__()
+        # 定义网络层
+        self.fc1 = Linear(1, 64)  # 输入层到隐藏层
+        self.fc2 = Linear(64, 64) # 隐藏层到隐藏层
+        self.fc3 = Linear(64, 1)  # 隐藏层到输出层
 
     def forward(self, x):
         """
@@ -120,6 +138,10 @@ class RegressionModel(Module):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
+        x = relu(self.fc1(x))
+        x = relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
     def get_loss(self, x, y):
         """
@@ -132,6 +154,8 @@ class RegressionModel(Module):
         Returns: a tensor of size 1 containing the loss
         """
         "*** YOUR CODE HERE ***"
+        predictions = self.forward(x)
+        return mse_loss(predictions,y)
 
     def train(self, dataset):
         """
@@ -148,7 +172,27 @@ class RegressionModel(Module):
 
         """
         "*** YOUR CODE HERE ***"
-        dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
+        dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+        # self.forward(tensor(dataloader))
+
+        learning_rate = 0.0001
+        num_epochs = 128
+        optimizer = optim.Adam(self.parameters(), lr=learning_rate)
+        ideal_loss = 0.01
+        loss = float('inf')
+        while loss > ideal_loss:
+        # for epoch in range(num_epochs):
+            for item in dataloader:
+                features = item['x']
+                labels = item['label']
+                optimizer.zero_grad()
+                outputs = self.forward(features)
+                loss = self.get_loss(outputs, labels)
+                # print(loss)
+                loss.backward()
+                optimizer.step()
+        print(loss)
+        return self
 
 
 class DigitClassificationModel(Module):
