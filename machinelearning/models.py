@@ -148,6 +148,7 @@ class RegressionModel(Module):
 
         """
         "*** YOUR CODE HERE ***"
+        dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
 
 
 class DigitClassificationModel(Module):
