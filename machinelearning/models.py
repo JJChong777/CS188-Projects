@@ -125,7 +125,10 @@ class RegressionModel(Module):
         super(RegressionModel, self).__init__()
         # 定义网络层
         self.fc1 = Linear(1, 64)  # 输入层到隐藏层
-        self.fc2 = Linear(64, 64) # 隐藏层到隐藏层
+        # self.fc2 = Linear(64, 128) # 隐藏层到隐藏层
+        # self.fc3 = Linear(128, 128) # 隐藏层到隐藏层
+        # self.fc4 = Linear(128, 64) # 隐藏层到隐藏层
+        self.fc2 = Linear(64, 64)  # 输入层到隐藏层
         self.fc3 = Linear(64, 1)  # 隐藏层到输出层
 
     def forward(self, x):
@@ -140,6 +143,8 @@ class RegressionModel(Module):
         "*** YOUR CODE HERE ***"
         x = relu(self.fc1(x))
         x = relu(self.fc2(x))
+        # x = relu(self.fc3(x))
+        # x = relu(self.fc4(x))
         x = self.fc3(x)
         return x
 
@@ -172,25 +177,31 @@ class RegressionModel(Module):
 
         """
         "*** YOUR CODE HERE ***"
-        dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+        dataloader = DataLoader(dataset, batch_size=128, shuffle=True)
         # self.forward(tensor(dataloader))
 
-        learning_rate = 0.0001
+        learning_rate = 0.005
         num_epochs = 128
         optimizer = optim.Adam(self.parameters(), lr=learning_rate)
-        ideal_loss = 0.01
-        loss = float('inf')
-        while loss > ideal_loss:
-        # for epoch in range(num_epochs):
+        # ideal_loss = 0.01
+        # loss = 
+        # while 1:
+        for epoch in range(num_epochs):
             for item in dataloader:
                 features = item['x']
                 labels = item['label']
                 optimizer.zero_grad()
                 outputs = self.forward(features)
                 loss = self.get_loss(outputs, labels)
-                # print(loss)
+                
+                # if loss < ideal_loss:
+                #     break
+
                 loss.backward()
                 optimizer.step()
+
+            # if loss < ideal_loss:
+            #     break
         print(loss)
         return self
 
