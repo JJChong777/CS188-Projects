@@ -34,15 +34,15 @@ class PerceptronModel(Module):
 
         Hint: You can use ones(dim) to create a tensor of dimension dim.
 
-        感知机用于将数据点分类为属于某个特定类别(+1)或不属于该类别(-1)。`dimensions` 参数表示数据的维度。例如，如果 `dimensions=2`，则表示感知机需要对二维点进行分类。  
+        感知机用于将数据点分类为属于某个特定类别(+1)或不属于该类别(-1)。`dimensions` 参数表示数据的维度。例如，如果 `dimensions=2`，则表示感知机需要对二维点进行分类。
 
-        为了让我们的自动评分系统能够检测到你的权重，你需要将其初始化为一个 PyTorch 的 Parameter 对象，如下所示：  
+        为了让我们的自动评分系统能够检测到你的权重，你需要将其初始化为一个 PyTorch 的 Parameter 对象，如下所示：
 
-        Parameter(weight_vector)  
+        Parameter(weight_vector)
 
-        其中 `weight_vector` 是一个维度为 `dimensions` 的 PyTorch 张量(Tensor)。  
+        其中 `weight_vector` 是一个维度为 `dimensions` 的 PyTorch 张量(Tensor)。
 
-        提示：你可以使用 `ones(dim)` 来创建一个维度为 `dim` 的全1张量。  
+        提示：你可以使用 `ones(dim)` 来创建一个维度为 `dim` 的全1张量。
 
         """
         super(PerceptronModel, self).__init__()
@@ -202,8 +202,8 @@ class RegressionModel(Module):
         Returns: a tensor of size 1 containing the loss
         """
         "*** YOUR CODE HERE ***"
-        predictions = self.forward(x)
-        return mse_loss(predictions,y)
+        # predictions = self.forward(x)
+        return mse_loss(x, y)
 
     def train(self, dataset):
         """
@@ -227,37 +227,41 @@ class RegressionModel(Module):
         learning_rate = 0.01
         num_epochs = 1000
         optimizer = optim.Adam(self.parameters(), lr=learning_rate)
-        # ideal_loss = 0.01
+        ideal_loss = 0.01
         loss_threshold = 0.02
-        total_loss = 0
-        # while 1:
-        for epoch in range(num_epochs):
+        total_loss = []
+        while 1:
+            # for epoch in range(num_epochs):
             for item in dataloader:
-                features = item['x']
-                labels = item['label']
+                features = item["x"]
+                labels = item["label"]
                 optimizer.zero_grad()
                 outputs = self.forward(features)
                 loss = self.get_loss(outputs, labels)
-                
+                total_loss.append(loss)
+
                 # if loss.item() < ideal_loss:
                 #     break
 
                 loss.backward()
                 optimizer.step()
 
-                total_loss += loss.item()
+                total_loss.append(loss)
 
-                average_loss = total_loss / len(dataloader)
-                print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {average_loss:.4f}')
+                average_loss = sum(total_loss) / len(dataloader)
+                # print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {average_loss:.4f}")
 
                 # Check if the loss is below the threshold
-                if average_loss <= loss_threshold:
-                    print(f'Training stopped early at epoch {epoch+1} with loss {average_loss:.4f}')
-                    break
-
+                # if average_loss <= loss_threshold:
+                #     print(
+                #         f"Training stopped early at epoch {epoch+1} with loss {average_loss:.4f}"
+                #     )
+                #     break
+            if average_loss <= ideal_loss:
+                break
             # if loss.item() < ideal_loss:
             #     break
-        print(loss)
+            print(average_loss)
         return self
 
 
