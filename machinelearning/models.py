@@ -224,7 +224,7 @@ class RegressionModel(Module):
         # self.forward(tensor(dataloader))
 
         # learning_rate = 0.005
-        learning_rate = 0.01
+        learning_rate = 0.001
         num_epochs = 1000
         optimizer = optim.Adam(self.parameters(), lr=learning_rate)
         # ideal_loss = 0.01
