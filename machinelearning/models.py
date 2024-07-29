@@ -128,30 +128,6 @@ class RegressionModel(Module):
         self.fc2 = Linear(64, 64)  # 输入层到隐藏层
         self.fc3 = Linear(64, 1)  # 隐藏层到输出层
 
-        # self.fc1 = Linear(1, 64)  # 输入层到隐藏层
-        # self.fc2 = Linear(64, 128) # 隐藏层到隐藏层
-        # self.fc3 = Linear(128, 128) # 隐藏层到隐藏层
-        # self.fc4 = Linear(128, 64) # 隐藏层到隐藏层
-        # self.fc5 = Linear(64, 1)  # 隐藏层到输出层
-
-        # self.fc1 = Linear(1, 64)  # 输入层到隐藏层
-        # self.fc2 = Linear(64, 128) # 隐藏层到隐藏层
-        # self.fc3 = Linear(128, 256) # 隐藏层到隐藏层
-        # self.fc4 = Linear(256, 256) # 隐藏层到隐藏层
-        # self.fc5 = Linear(256, 128) # 隐藏层到隐藏层
-        # self.fc6 = Linear(128, 64) # 隐藏层到隐藏层
-        # self.fc7 = Linear(64, 1)  # 隐藏层到输出层
-
-        # self.fc1 = Linear(1, 64)  # 输入层到隐藏层
-        # self.fc2 = Linear(64, 128) # 隐藏层到隐藏层
-        # self.fc3 = Linear(128, 256) # 隐藏层到隐藏层
-        # self.fc4 = Linear(256, 512) # 隐藏层到隐藏层
-        # self.fc5 = Linear(512, 512) # 隐藏层到隐藏层
-        # self.fc6 = Linear(512, 256) # 隐藏层到隐藏层
-        # self.fc7 = Linear(256, 128) # 隐藏层到隐藏层
-        # self.fc8 = Linear(128, 64) # 隐藏层到隐藏层
-        # self.fc9 = Linear(64, 1)  # 隐藏层到输出层
-
     def forward(self, x):
         """
         Runs the model for a batch of examples.
@@ -165,30 +141,6 @@ class RegressionModel(Module):
         x = relu(self.fc1(x))
         x = relu(self.fc2(x))
         x = self.fc3(x)
-
-        # x = relu(self.fc1(x))
-        # x = relu(self.fc2(x))
-        # x = relu(self.fc3(x))
-        # x = relu(self.fc4(x))
-        # x = self.fc5(x)
-
-        # x = relu(self.fc1(x))
-        # x = relu(self.fc2(x))
-        # x = relu(self.fc3(x))
-        # x = relu(self.fc4(x))
-        # x = relu(self.fc5(x))
-        # x = relu(self.fc6(x))
-        # x = self.fc7(x)
-
-        # x = relu(self.fc1(x))
-        # x = relu(self.fc2(x))
-        # x = relu(self.fc3(x))
-        # x = relu(self.fc4(x))
-        # x = relu(self.fc5(x))
-        # x = relu(self.fc6(x))
-        # x = relu(self.fc7(x))
-        # x = relu(self.fc8(x))
-        # x = self.fc9(x)
         return x
 
     def get_loss(self, x, y):
@@ -202,8 +154,8 @@ class RegressionModel(Module):
         Returns: a tensor of size 1 containing the loss
         """
         "*** YOUR CODE HERE ***"
-        # predictions = self.forward(x)
-        return mse_loss(x, y)
+        predictions = self.forward(x)
+        return mse_loss(predictions, y)
 
     def train(self, dataset):
         """
@@ -221,47 +173,28 @@ class RegressionModel(Module):
         """
         "*** YOUR CODE HERE ***"
         dataloader = DataLoader(dataset, batch_size=128, shuffle=True)
-        # self.forward(tensor(dataloader))
 
         # learning_rate = 0.005
         learning_rate = 0.001
         num_epochs = 1000
         optimizer = optim.Adam(self.parameters(), lr=learning_rate)
         ideal_loss = 0.01
-        loss_threshold = 0.02
-        total_loss = []
+        loss_threshold = 0.01
+
         while 1:
-            # for epoch in range(num_epochs):
             for item in dataloader:
                 features = item["x"]
                 labels = item["label"]
                 optimizer.zero_grad()
-                outputs = self.forward(features)
-                loss = self.get_loss(outputs, labels)
-                total_loss.append(loss)
 
-                # if loss.item() < ideal_loss:
-                #     break
+                loss = self.get_loss(features, labels)
 
                 loss.backward()
                 optimizer.step()
 
-                total_loss.append(loss)
-
-                average_loss = sum(total_loss) / len(dataloader)
-                # print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {average_loss:.4f}")
-
-                # Check if the loss is below the threshold
-                # if average_loss <= loss_threshold:
-                #     print(
-                #         f"Training stopped early at epoch {epoch+1} with loss {average_loss:.4f}"
-                #     )
-                #     break
-            if average_loss <= ideal_loss:
+            if loss.item() < ideal_loss:
                 break
-            # if loss.item() < ideal_loss:
-            #     break
-            print(average_loss)
+
         return self
 
 
