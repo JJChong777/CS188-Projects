@@ -141,7 +141,6 @@ class RegressionModel(Module):
         x = relu(self.fc1(x))
         x = relu(self.fc2(x))
         x = self.fc3(x)
-
         return x
 
     def get_loss(self, x, y):
@@ -155,8 +154,8 @@ class RegressionModel(Module):
         Returns: a tensor of size 1 containing the loss
         """
         "*** YOUR CODE HERE ***"
-        # predictions = self.forward(x)
-        return mse_loss(x, y)
+        predictions = self.forward(x)
+        return mse_loss(predictions, y)
 
     def train(self, dataset):
         """
@@ -173,34 +172,29 @@ class RegressionModel(Module):
 
         """
         "*** YOUR CODE HERE ***"
-        dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+        dataloader = DataLoader(dataset, batch_size=128, shuffle=True)
 
         # learning_rate = 0.005
         learning_rate = 0.001
         num_epochs = 1000
         optimizer = optim.Adam(self.parameters(), lr=learning_rate)
         ideal_loss = 0.01
-        loss_threshold = 0.02
-        
-        for epoch in range(num_epochs):
-            total_loss = 0.0
+        loss_threshold = 0.01
+
+        while 1:
             for item in dataloader:
                 features = item["x"]
                 labels = item["label"]
                 optimizer.zero_grad()
-                outputs = self.forward(features)
-                loss = self.get_loss(outputs, labels)
+
+                loss = self.get_loss(features, labels)
+
                 loss.backward()
                 optimizer.step()
-                total_loss += loss.item()
 
-            average_loss = total_loss / len(dataloader)
-            print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {average_loss:.4f}")
-
-            if average_loss <= ideal_loss:
-                print(f"Training stopped early at epoch {epoch+1} with loss {average_loss:.4f}")
+            if loss.item() < ideal_loss:
                 break
-            
+
         return self
 
 
