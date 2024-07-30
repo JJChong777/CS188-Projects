@@ -176,9 +176,7 @@ class RegressionModel(Module):
 
         # learning_rate = 0.005
         learning_rate = 0.001
-        num_epochs = 1000
         optimizer = optim.Adam(self.parameters(), lr=learning_rate)
-        ideal_loss = 0.01
         loss_threshold = 0.01
 
         while 1:
@@ -191,8 +189,7 @@ class RegressionModel(Module):
 
                 loss.backward()
                 optimizer.step()
-
-            if loss.item() < ideal_loss:
+            if loss.item() < loss_threshold:
                 break
 
         return self
@@ -219,6 +216,10 @@ class DigitClassificationModel(Module):
         input_size = 28 * 28
         output_size = 10
         "*** YOUR CODE HERE ***"
+        # 定义网络层
+        self.fc1 = Linear(input_size, 500)  # 输入层到隐藏层
+        self.fc2 = Linear(500, 250)  # 输入层到隐藏层
+        self.fc3 = Linear(250, 10)  # 隐藏层到输出层
 
     def run(self, x):
         """
@@ -235,6 +236,10 @@ class DigitClassificationModel(Module):
                 (also called logits)
         """
         """ YOUR CODE HERE """
+        x = relu(self.fc1(x))
+        x = relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
     def get_loss(self, x, y):
         """
@@ -250,12 +255,32 @@ class DigitClassificationModel(Module):
         Returns: a loss tensor
         """
         """ YOUR CODE HERE """
+        prediction = self.run(x)
+        return cross_entropy(prediction, y)
 
     def train(self, dataset):
         """
         Trains the model.
         """
         """ YOUR CODE HERE """
+        dataloader = DataLoader(dataset, batch_size=128, shuffle=True)
+        learning_rate = 0.001
+        optimizer = optim.Adam(self.parameters(), lr=learning_rate)
+        loss_threshold = 0.015
+        while True:
+            for item in dataloader:
+                features = item["x"]
+                labels = item["label"]
+                optimizer.zero_grad()
+
+                loss = self.get_loss(features, labels)
+
+                loss.backward()
+                optimizer.step()
+            if loss.item() < loss_threshold:
+                break
+
+        return self
 
 
 class LanguageIDModel(Module):
