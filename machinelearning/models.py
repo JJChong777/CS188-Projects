@@ -302,19 +302,23 @@ class LanguageIDModel(Module):
         super(LanguageIDModel, self).__init__()
         "*** YOUR CODE HERE ***"
         # Initialize your model parameters here
-        self.hidden_size = 128  # 可以根据需要调整隐藏层大小
+        self.hidden_size = 300  # 可以根据需要调整隐藏层大小
 
         # 初始网络 f_initial, 将字符数转换为隐藏层大小
-        self.initial_layer = Linear(self.num_chars, self.hidden_size)
+        # self.initial_layer = Linear(self.num_chars, self.hidden_size)
 
         # 递归网络 f,处理隐藏状态和字符输入
-        self.hidden_layer = Linear(self.hidden_size, self.hidden_size)
         self.char_layer = Linear(self.num_chars, self.hidden_size)
+        self.hidden_layer_1 = Linear(self.hidden_size, self.hidden_size)
+        # self.hidden_layer_2 = Linear(self.hidden_size, self.hidden_size)
+        # self.hidden_layer_3 = Linear(self.hidden_size, self.hidden_size)
+        # self.weight_input = Parameter(1, 512)
+        # self.bias_input = Parameter(1, 512)
+        # self.weight_2_input = Parameter(1, 512)
+        # self.bias_2_input = Parameter(1, 512)
 
         # 输出层,将隐藏层大小转换为语言数
         self.output_layer = Linear(self.hidden_size, len(self.languages))
-
-
 
     def run(self, xs):
         """
@@ -349,20 +353,24 @@ class LanguageIDModel(Module):
         # batch_size = xs.shape[1]  # 获取批次大小
 
         # 计算初始隐藏状态，使用第一个字符和初始层
-        print(f"xs[0]: {xs[0]}")
+        # print(f"xs[0]: {xs[0]}")
         # print(f"self.initial_layer(xs[0]): {self.initial_layer(xs[0])}")
-        h = relu(self.initial_layer(xs[0]))
+        h = self.char_layer(xs[0])
+        h = relu(h)
 
         # 对每个字符进行递归处理，更新隐藏状态
         for x in xs[1:]:
             # 输出形状
             # print(f'Input shape in run: {[x.shape for x in xs]}')
-            h = relu(self.hidden_layer(h) + self.char_layer(x))
+
+            h = relu(self.hidden_layer_1(h)) + relu(self.char_layer(x))
+            # h = relu(self.hidden_layer_2(h))
+            # h = relu(self.hidden_layer_3(h))
 
         # 计算最终输出分数
         # print(f"h: {h}")
         logits = self.output_layer(h)
-        print(f"return shape {logits.shape}")
+        # print(f"return shape {logits.shape}")
         return logits
 
     def get_loss(self, xs, y):
@@ -380,8 +388,8 @@ class LanguageIDModel(Module):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
-        logits = self.run(xs) # 运行模型获取预测值
-        return cross_entropy(logits, y.argmax(dim=1)) # 计算交叉熵损失
+        logits = self.run(xs)  # 运行模型获取预测值
+        return cross_entropy(logits, y)  # 计算交叉熵损失
 
     def train(self, dataset):
         """
@@ -398,29 +406,32 @@ class LanguageIDModel(Module):
         For more information, look at the pytorch documentation of torch.movedim()
         """
         "*** YOUR CODE HERE ***"
-        learning_rate=0.001
-        epochs=10
+        learning_rate = 0.00785
         optimizer = optim.Adam(self.parameters(), lr=learning_rate)
-        print("Come to train")
-        for epoch in range(epochs):
-            print(f"come to epoch {epoch}")
+        dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+        epoch = 0
+        # print("Come to train")
+        accuracy = 0
+        while accuracy < 0.81:
+            # print(f"come to epoch {epoch}")
             total_loss = 0
-            for batch in dataset: 
-                print(f"come to batch ")
-                xs = batch['x']  # 获取批次数据中的输入
-                y = batch['label']  # 获取批次数据中的标签
+            for batch in dataloader:
+                # print(f"come to batch ")
+                xs = batch["x"]  # 获取批次数据中的输入
+                y = batch["label"]  # 获取批次数据中的标签
                 # print(xs)
-                print(f'Input shape before movedim: {xs.shape}')  # 输出xs的形状
+                # print(f"Input shape before movedim: {xs.shape}")  # 输出xs的形状
                 xs = movedim(xs, 1, 0)  # 按需要交换维度
                 # 确保输入的维度是 (length of word, batch_size, num_chars)
-                print(f'Input shape after movedim: {xs.shape}')  # 输出xs的形状
+                # print(f"Input shape after movedim: {xs.shape}")  # 输出xs的形状
                 optimizer.zero_grad()
                 loss = self.get_loss(xs, y)
+                # print(f"validation accuracy: {dataset.get_validation_accuracy()}")
                 loss.backward()
                 optimizer.step()
                 total_loss += loss.item()
-            print(f'Epoch {epoch + 1}, Loss: {total_loss / len(dataset)}')
-
+                accuracy = dataset.get_validation_accuracy()
+            print(f"Accuracy: {accuracy}")
 
 
 def Convolve(input: tensor, weight: tensor):
